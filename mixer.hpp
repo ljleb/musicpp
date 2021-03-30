@@ -5,18 +5,28 @@
 
 namespace mpp
 {
-    template <typename Output, typename Inputs>
+    template <typename Output, typename Input>
     class Mixer
     {
     public:
-        Output mix(const Inputs& inputs) const;
+        std::unique_ptr<const Output> mix(const Input& left, const Input& right) const;
     };
 
-    template <typename Output, typename Inputs>
-    inline std::unique_ptr<const Output> mix(const Inputs& inputs)
+    template <typename Output, typename LeftInput, typename RightInput>
+    inline std::unique_ptr<const Output> mix(const LeftInput& left, const RightInput& right)
     {
-        mpp::Mixer<Output, Inputs> mixer;
-        return mixer.mix(inputs);
+        const mpp::Mixer<Output, std::common_type_t<LeftInput, RightInput>> mixer;
+        return mixer.mix(left, right);
+    }
+
+    template <typename Output, typename FirstInput, typename SecondInput, typename ThirdInput, typename... MoreInputs>
+    inline std::unique_ptr<const Output> mix(FirstInput&& first, SecondInput&& second, ThirdInput third, MoreInputs&&... more)
+    {
+        const std::unique_ptr<const Output>& mixed_more = mix(
+            std::forward<SecondInput>(second),
+            std::forward<ThirdInput>(third),
+            std::forward<MoreInputs...>(more)...);
+        return mix<Output>(std::forward<FirstInput>(first), mixed_more);
     }
 }
 

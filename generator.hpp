@@ -7,25 +7,16 @@
 
 namespace mpp
 {
-    namespace
-    {
-        struct StringLiteral
-        {
-            constexpr StringLiteral(const char*)
-            {}
-        };
-    }
-
-    template <StringLiteral literal, typename Output, typename... Inputs>
+    template <typename Output, typename... Inputs>
     struct Generator
     {
         std::unique_ptr<const Output> generate(Inputs... inputs) const;
     };
 
-    template <StringLiteral literal, typename Output, typename... Inputs>
+    template <typename Output, typename... Inputs>
     inline std::unique_ptr<const Output> generate(Inputs&&... inputs)
     {
-        Generator<literal, Output, Inputs...> generator;
+        const Generator<Output, Inputs...> generator;
         return generator.generate(std::forward<Inputs>(inputs)...);
     }
 }
