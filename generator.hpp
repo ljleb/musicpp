@@ -23,7 +23,7 @@ namespace mpp
     };
 
     template <StringLiteral literal, typename Output, typename... Inputs>
-    std::unique_ptr<const Output> generate(Inputs&&... inputs)
+    inline std::unique_ptr<const Output> generate(Inputs&&... inputs)
     {
         Generator<literal, Output, Inputs...> generator;
         return generator.generate(std::forward<Inputs>(inputs)...);

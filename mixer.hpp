@@ -13,7 +13,7 @@ namespace mpp
     };
 
     template <typename Output, typename Inputs>
-    std::unique_ptr<const Output> mix(const Inputs& inputs)
+    inline std::unique_ptr<const Output> mix(const Inputs& inputs)
     {
         mpp::Mixer<Output, Inputs> mixer;
         return mixer.mix(inputs);
