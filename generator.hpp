@@ -7,17 +7,17 @@
 
 namespace mpp
 {
-    template <typename Output, typename... Inputs>
+    template <uint64_t id, typename Output, typename... Inputs>
     struct Generator
     {
-        std::unique_ptr<const Output> generate(Inputs... inputs) const;
+        Output generate(Inputs... inputs) const;
     };
 
-    template <typename Output, typename... Inputs>
-    inline std::unique_ptr<const Output> generate(Inputs&&... inputs)
+    template <uint64_t id, typename Output, typename... Inputs>
+    Output generate(const Inputs&... inputs)
     {
-        const Generator<Output, Inputs...> generator;
-        return generator.generate(std::forward<Inputs>(inputs)...);
+        const Generator<id, Output, Inputs...> generator;
+        return generator.generate(inputs...);
     }
 }
 

@@ -10,71 +10,33 @@
 #include <memory>
 
 constexpr const uint64_t SAMPLE_RATE = 44100;
+constexpr const uint64_t SAMPLES_SIZE = SAMPLE_RATE * 4;
+
 using Sample = float;
-using Samples = std::vector<Sample>;
+using Samples = std::array<Sample, SAMPLES_SIZE>;
 
 namespace mpp
 {
-    struct SinSamples : public Samples
-    {};
-
     template <>
-    struct Generator<SinSamples, float, float, uint64_t>
+    struct Generator<0, Sample, float, uint64_t>
     {
-        std::unique_ptr<const SinSamples> generate(
-            const float& start_frequency,
-            const float& end_frequency,
-            const uint64_t& sample_size
-        ) const {
-            std::unique_ptr<SinSamples> samples = std::make_unique<SinSamples>();
-
-            for(uint64_t i = 0; i < sample_size; ++i)
-            {
-                samples->emplace_back(generate_sample(i, start_frequency, end_frequency, sample_size));
-            }
-
-            return samples;
-        }
-
-    private:
-        float generate_sample(
-            const uint64_t& index,
-            const float& start_frequency,
-            const float& end_frequency,
-            const uint64_t& sample_size
-        ) const {
-            const float& current_ratio = index / float(sample_size);
-            const float& current_frequency =
-                (start_frequency * (1 - current_ratio)) + (end_frequency * current_ratio);
-            return std::sin((index * 2 * M_PI * current_frequency) / SAMPLE_RATE);
+        Sample generate(const float& frequency, const uint64_t& index) const {
+            return std::sin((index * 2 * M_PI * frequency) / SAMPLE_RATE);
         }
     };
 
-    template <typename Input>
-    class Mixer<Samples, Input>
+    template <>
+    class Mixer<Sample, Sample>
     {
     public:
-        std::unique_ptr<const Samples> mix(const Input& left, const Input& right) const
+        Sample mix(const Sample& left, const Sample& right) const
         {
-            std::unique_ptr<Samples> result = std::make_unique<Samples>(
-                std::max(left->size(), right->size()));
-
-            for (uint64_t i = 0; i < left->size(); ++i)
-            {
-                (*result)[i] = (*left)[i];
-            }
-
-            for (uint64_t i = 0; i < right->size(); ++i)
-            {
-                (*result)[i] += (*right)[i];
-            }
-
-            return result;
+            return left + right;
         }
     };
 }
 
-void write_samples_to(const std::string& file_name, const std::unique_ptr<const Samples>& samples)
+void write_samples_to(const std::string& file_name, const Samples& samples)
 {
     std::ofstream file(file_name, std::ios::out | std::ios::binary);
 
@@ -84,17 +46,30 @@ void write_samples_to(const std::string& file_name, const std::unique_ptr<const 
     }
 
     file.seekp(0);
-    file.write(reinterpret_cast<const char*>(samples->data()), sizeof(float) * samples->size());
+    file.write(reinterpret_cast<const char*>(samples.data()), sizeof(float) * samples.size());
+}
+
+float interpolate(const float& min, const float& max, const float& time)
+{
+    return min * (1 - time) + max * time;
 }
 
 int main()
 {
-    std::unique_ptr<const Samples> samples1 = mpp::generate<mpp::SinSamples>(60.f, 1200.f, SAMPLE_RATE * 2);
-    std::unique_ptr<const Samples> samples2 = mpp::generate<mpp::SinSamples>(50.f, 2500.f, SAMPLE_RATE * 2);
-    std::unique_ptr<const Samples> samples3 = mpp::mix<Samples>(
-        samples1,
-        samples2);
+    Samples result;
+    for (uint64_t sample_index = 0; sample_index < result.size(); ++sample_index)
+    {
+        const float& current_ratio = sample_index / float(result.size());
 
-    write_samples_to("a.raw", samples3);
+        const float& sample1_frequency = interpolate(60.f, 1200.f, current_ratio);
+        const Sample& sample1 = mpp::generate<0, Sample>(sample1_frequency, sample_index);
+
+        const float& sample2_frequency = interpolate(50.f, 2500.f, current_ratio);
+        const Sample& sample2 = mpp::generate<0, Sample>(sample2_frequency, sample_index);
+
+        result[sample_index] = mpp::mix<Sample>(sample1, sample2);
+    }
+
+    write_samples_to("a.raw", result);
     return 0;
 }
