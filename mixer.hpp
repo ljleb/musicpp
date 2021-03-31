@@ -5,28 +5,41 @@
 
 namespace mpp
 {
-    template <typename Output, typename Input>
+    template <typename A>
     class Mixer
     {
     public:
-        Output mix(const Input& left, const Input& right) const;
+        A mix(const A& left, const A& right) const&;
     };
 
-    template <typename Output, typename LeftInput, typename RightInput>
-    inline Output mix(const LeftInput& left, const RightInput& right)
+    template <typename A>
+    inline A mix(const A& left, const A& right)
     {
-        const mpp::Mixer<Output, std::common_type_t<LeftInput, RightInput>> mixer;
+        const mpp::Mixer<A> mixer;
         return mixer.mix(left, right);
     }
 
-    template <typename Output, typename FirstInput, typename SecondInput, typename ThirdInput, typename... MoreInputs>
-    inline Output mix(FirstInput&& first, SecondInput&& second, ThirdInput third, MoreInputs&&... more)
+    template <typename A, typename... MoreInputs>
+    inline A mix(const A& first, const A& second, const A& third, MoreInputs&&... more)
     {
-        const Output& mixed_more = mix(
-            std::forward<SecondInput>(second),
-            std::forward<ThirdInput>(third),
+        const A& mixed_more = mix(
+            second,
+            third,
             std::forward<MoreInputs...>(more)...);
-        return mix<Output>(std::forward<FirstInput>(first), mixed_more);
+        return mix<A>(first, mixed_more);
+    }
+
+    template <typename A, typename Iterable>
+    A mix(const Iterable& iterable)
+    {
+        A result;
+
+        for (const A& input: iterable)
+        {
+            result = mix(result, input);
+        }
+
+        return result;
     }
 }
 

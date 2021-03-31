@@ -1,23 +1,25 @@
 #ifndef MPP_GENERATOR_HPP
 #define MPP_GENERATOR_HPP
 
-#include <iostream>
-#include <algorithm>
-#include <memory>
+#include <cstdint>
 
 namespace mpp
 {
-    template <uint64_t id, typename Output, typename... Inputs>
-    struct Generator
+    enum GeneratorKind
     {
-        Output generate(Inputs... inputs) const;
+        SINE = 0,
     };
 
-    template <uint64_t id, typename Output, typename... Inputs>
-    Output generate(const Inputs&... inputs)
+    template <GeneratorKind Kind, typename Output, typename... Args>
+    struct Generator
     {
-        const Generator<id, Output, Inputs...> generator;
-        return generator.generate(inputs...);
+        Output generate(const uint64_t& index, const uint64_t& max_index) const&;
+    };
+
+    template <GeneratorKind Kind, typename Output, typename... Args>
+    Generator<Kind, Output, Args...> generator(const Args&... args)
+    {
+        return Generator<Kind, Output, Args...> { args... };
     }
 }
 
