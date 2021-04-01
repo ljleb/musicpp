@@ -50,7 +50,7 @@ int main()
         //     SAMPLE_RATE/8,
         // }),
 
-        // generator<SINE, Sample>(LinearInterpolation<Frequency> { 800, 000 }),
+        generator<SINE, Sample>(LinearInterpolation<Frequency> { 3200, 1600 }),
         // generator<SINE, Sample>(Frequency { 440*4 }),
         // generator<SINE, Sample>(LinearInterpolation<Frequency> { 000, 800 }),
     })};
