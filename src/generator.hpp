@@ -10,16 +10,16 @@ namespace mpp
         SINE = 0,
     };
 
-    template <GeneratorShape Shape, typename Output, typename... Args>
+    template <GeneratorShape Shape, typename Output, typename Input>
     struct Generator
     {
         Output generate(const uint64_t& index, const uint64_t& max_index);
     };
 
-    template <GeneratorShape Shape, typename Output, typename... Args>
-    Generator<Shape, Output, Args...> generator(const Args&... args)
+    template <GeneratorShape Shape, typename Output, typename Input>
+    Generator<Shape, Output, Input> generator(const Input& input)
     {
-        return Generator<Shape, Output, Args...> { args... };
+        return Generator<Shape, Output, Input> { input };
     }
 }
 

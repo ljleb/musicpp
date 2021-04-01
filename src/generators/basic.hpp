@@ -11,9 +11,10 @@ namespace mpp
     class Frequency
     {
     public:
-        constexpr Frequency(const float& frequency): _frequency(frequency)
+        constexpr Frequency(const float& frequency):
+            _frequency(frequency)
         {}
-    
+
         constexpr operator float() const&
         {
             return _frequency;
@@ -28,10 +29,10 @@ namespace mpp
     {
         Sample generate(const uint64_t& index, const uint64_t& max_index) const&
         {
-            return std::sin((index * 2 * M_PI * frequency) / SAMPLE_RATE);
+            return std::sin(frequency * 2 * M_PI * index / SAMPLE_RATE);
         }
 
-        float frequency;
+        Frequency frequency;
     };
 }
 

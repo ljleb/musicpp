@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "generators/composite.hpp"
 #include "generators/linear_interpolation.hpp"
 #include "generators/basic.hpp"
@@ -18,8 +20,20 @@ int main()
     using namespace mpp;
 
     const auto& master_generator { generator<SINE, Sample>(std::tuple {
-        generator<SINE, Sample, LinearInterpolation<Frequency>>({ 60.f, 1400.f }),
-        generator<SINE, Sample, LinearInterpolation<Frequency>>({ 40.f, 1600.f }),
+        generator<SINE, Sample>(BezierInterpolation<Frequency, 2> {
+            {
+                { 0, 1000 },
+                { 1000, 0 },
+            },
+            {
+                { 1000, 0 },
+                { 0, 1000 },
+            },
+        }),
+        // generator<SINE, Sample>(LinearInterpolation<Frequency> { 800, 000 }),
+        generator<SINE, Sample>(Frequency { 1000 }),
+        // generator<SINE, Sample>(Frequency { 440*4 }),
+        // generator<SINE, Sample>(LinearInterpolation<Frequency> { 000, 800 }),
     })};
 
     Samples result {};

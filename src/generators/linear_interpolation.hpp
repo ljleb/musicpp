@@ -4,43 +4,105 @@
 #include "generator.hpp"
 #include "basic.hpp"
 
+#include <cmath>
+
 namespace mpp
 {
-    template <typename A>
-    class LinearInterpolation
+    template <typename Input, uint64_t order>
+    struct BezierInterpolation;
+
+    template <typename Input, uint64_t order>
+    class BezierInterpolationBase
     {
     public:
-        constexpr LinearInterpolation(
-            const A& min,
-            const A& max
-        ):
-            _min { min }, 
+        using NestedInput = std::conditional_t<order == 0,
+            Input,
+            BezierInterpolation<Input, order - 1>>;
+
+        constexpr BezierInterpolationBase(const NestedInput& min, const NestedInput& max):
+            _min { min },
             _max { max }
         {}
 
-        constexpr A interpolate(const A& ratio) const&
+        constexpr Input interpolate(const float& ratio) const&
         {
-            return _min * (1 - ratio) + _max * ratio;
+            Input min {0};
+            Input max {0};
+
+            if constexpr (order == 0)
+            {
+                min = _min;
+                max = _max;
+            }
+            else
+            {
+                min = _min.interpolate(ratio);
+                max = _max.interpolate(ratio);
+            }
+
+            return (min * (1 - ratio)) + (max * ratio);
         }
 
     private:
-        A _min;
-        A _max;
+        NestedInput _min;
+        NestedInput _max;
     };
 
-    template <GeneratorShape Shape, typename Output>
-    struct Generator<Shape, Output, LinearInterpolation<Frequency>>
+    template <typename Input, uint64_t order>
+    struct BezierInterpolation : public BezierInterpolationBase<Input, order>
+    {
+        using NestedInput = typename BezierInterpolationBase<Input, order>::NestedInput;
+
+        constexpr BezierInterpolation(const NestedInput& min, const NestedInput& max):
+            BezierInterpolationBase<Input, order> { min, max }
+        {}
+    };
+
+    template <>
+    struct BezierInterpolation<Frequency, 0> : public BezierInterpolationBase<Frequency, 0>
+    {
+        using NestedInput = typename BezierInterpolationBase<Frequency, 0>::NestedInput;
+
+        constexpr BezierInterpolation(const Frequency& min, const Frequency& max):
+            BezierInterpolationBase<Frequency, 0> { min, std::abs(max - min) / 2 }
+        {}
+    };
+
+    template <typename Input>
+    using LinearInterpolation = BezierInterpolation<Input, 0>;
+
+    template <GeneratorShape Shape, typename Output, typename Input, uint64_t order>
+    struct Generator<Shape, Output, BezierInterpolation<Input, order>>
     {
         Output generate(const uint64_t& index, const uint64_t& max_index) const&
         {
-            const float& ratio { index / float(max_index) };
-            const float& frequency { frequency_interpolation.interpolate(ratio) };
+            const float& ratio { float(index) / float(max_index) };
+            const Input& interpolated_input { interpolation.interpolate(ratio) };
 
-            Generator<Shape, Output, Frequency> generator { frequency };
+            // std::cout << interpolated_input << '\n';
+
+            Generator<Shape, Output, Input> generator { interpolated_input };
             return generator.generate(index, max_index);
         }
 
-        LinearInterpolation<Frequency> frequency_interpolation;
+        BezierInterpolation<Input, order> interpolation;
+    };
+
+    template <GeneratorShape Shape, typename Output, uint64_t order>
+    struct Generator<Shape, Output, BezierInterpolation<Frequency, order>>
+    {
+        Output generate(const uint64_t& index, const uint64_t& max_index) const&
+        {
+            const float& ratio { float(index) / float(max_index) };
+            const Frequency& interpolated_input { interpolation.interpolate(ratio) };
+
+            // std::cout << interpolated_input << '\n';
+
+            Generator<Shape, Output, Frequency> generator { interpolated_input };
+            return generator.generate(index, max_index);
+        }
+
+        BezierInterpolation<Frequency, order> interpolation;
     };
 }
 
