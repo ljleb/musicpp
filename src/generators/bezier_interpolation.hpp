@@ -68,7 +68,7 @@ namespace mpp
     {
     public:
         constexpr BezierInterpolation(const Frequency& min, const Frequency& max):
-            BezierInterpolationBase<Frequency, 0> { min, std::min(min, max) + (std::abs(max - min) / 2) }
+            BezierInterpolationBase<Frequency, 0> { min, min + (max - min) / 2 }
         {}
     };
 
