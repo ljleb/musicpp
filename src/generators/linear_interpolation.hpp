@@ -24,7 +24,7 @@ namespace mpp
             _max { max }
         {}
 
-        constexpr Input interpolate(const float& ratio) const&
+        constexpr Input interpolate(const uint64_t& index, const uint64_t& max_index) const&
         {
             Input min {0};
             Input max {0};
@@ -36,14 +36,15 @@ namespace mpp
             }
             else
             {
-                min = _min.interpolate(ratio);
-                max = _max.interpolate(ratio);
+                min = _min.interpolate(index, max_index);
+                max = _max.interpolate(index, max_index);
             }
 
+            const float& ratio { float(index) / float(max_index) };
             return (min * (1 - ratio)) + (max * ratio);
         }
 
-    private:
+    protected:
         NestedInput _min;
         NestedInput _max;
     };
@@ -64,8 +65,15 @@ namespace mpp
         using NestedInput = typename BezierInterpolationBase<Frequency, 0>::NestedInput;
 
         constexpr BezierInterpolation(const Frequency& min, const Frequency& max):
-            BezierInterpolationBase<Frequency, 0> { min, std::abs(max - min) / 2 }
+            BezierInterpolationBase<Frequency, 0> { min, max }
         {}
+
+        constexpr Frequency interpolate(const uint64_t& index, const uint64_t& max_index) const&
+        {
+            const float& max { std::abs(_max - _min) / ((max_index / SAMPLE_RATE) / 2) };
+
+            return BezierInterpolationBase<Frequency, 0>::interpolate(index, max_index);
+        }
     };
 
     template <typename Input>
@@ -76,33 +84,14 @@ namespace mpp
     {
         Output generate(const uint64_t& index, const uint64_t& max_index) const&
         {
-            const float& ratio { float(index) / float(max_index) };
-            const Input& interpolated_input { interpolation.interpolate(ratio) };
-
-            // std::cout << interpolated_input << '\n';
+            const Input& interpolated_input { interpolation.interpolate(index, max_index) };
+            std::cout << interpolated_input << '\n';
 
             Generator<Shape, Output, Input> generator { interpolated_input };
             return generator.generate(index, max_index);
         }
 
         BezierInterpolation<Input, order> interpolation;
-    };
-
-    template <GeneratorShape Shape, typename Output, uint64_t order>
-    struct Generator<Shape, Output, BezierInterpolation<Frequency, order>>
-    {
-        Output generate(const uint64_t& index, const uint64_t& max_index) const&
-        {
-            const float& ratio { float(index) / float(max_index) };
-            const Frequency& interpolated_input { interpolation.interpolate(ratio) };
-
-            // std::cout << interpolated_input << '\n';
-
-            Generator<Shape, Output, Frequency> generator { interpolated_input };
-            return generator.generate(index, max_index);
-        }
-
-        BezierInterpolation<Frequency, order> interpolation;
     };
 }
 
