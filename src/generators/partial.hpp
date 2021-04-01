@@ -39,7 +39,7 @@ namespace mpp
                 return {};
             }
 
-            return partial.generator.generate(index - partial.offset, partial.offset + partial.length);
+            return partial.generator.generate(index - partial.offset, partial.length);
         }
 
         Partial<NestedGenerator> partial;

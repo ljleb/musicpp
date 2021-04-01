@@ -65,15 +65,8 @@ namespace mpp
         using NestedInput = typename BezierInterpolationBase<Frequency, 0>::NestedInput;
 
         constexpr BezierInterpolation(const Frequency& min, const Frequency& max):
-            BezierInterpolationBase<Frequency, 0> { min, max }
+            BezierInterpolationBase<Frequency, 0> { min, std::abs(max - min) / 2 }
         {}
-
-        constexpr Frequency interpolate(const uint64_t& index, const uint64_t& max_index) const&
-        {
-            const float& max { std::abs(_max - _min) / ((max_index / SAMPLE_RATE) / 2) };
-
-            return BezierInterpolationBase<Frequency, 0>::interpolate(index, max_index);
-        }
     };
 
     template <typename Input>

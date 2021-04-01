@@ -28,12 +28,29 @@ int main()
         //         { 0, 1000 },
         //     },
         // }),
-        generator<SINE, Sample>(Partial {
-            generator<SINE, Sample>(LinearInterpolation<Frequency> { 800, 000 }),
-            SAMPLE_RATE,
-            SAMPLE_RATE,
-        }),
-        generator<SINE, Sample>(Frequency { 1000 }),
+
+        // generator<SINE, Sample>(Partial {
+        //     generator<SINE, Sample>(LinearInterpolation<Frequency> { 200, 000 }),
+        //     SAMPLE_RATE*0,
+        //     SAMPLE_RATE/8,
+        // }),
+        // generator<SINE, Sample>(Partial {
+        //     generator<SINE, Sample>(LinearInterpolation<Frequency> { 200, 000 }),
+        //     SAMPLE_RATE*1,
+        //     SAMPLE_RATE/8,
+        // }),
+        // generator<SINE, Sample>(Partial {
+        //     generator<SINE, Sample>(LinearInterpolation<Frequency> { 200, 000 }),
+        //     SAMPLE_RATE*2,
+        //     SAMPLE_RATE/8,
+        // }),
+        // generator<SINE, Sample>(Partial {
+        //     generator<SINE, Sample>(LinearInterpolation<Frequency> { 200, 000 }),
+        //     SAMPLE_RATE*3,
+        //     SAMPLE_RATE/8,
+        // }),
+
+        // generator<SINE, Sample>(LinearInterpolation<Frequency> { 800, 000 }),
         // generator<SINE, Sample>(Frequency { 440*4 }),
         // generator<SINE, Sample>(LinearInterpolation<Frequency> { 000, 800 }),
     })};
