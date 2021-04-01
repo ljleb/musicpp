@@ -11,22 +11,23 @@
 
 namespace mpp
 {
-    template <GeneratorShape Shape, typename Output, typename... Generators>
-    struct Generator<Shape, Output, std::tuple<Generators...>>
+    template <GeneratorShape Shape, typename Output, typename... Inputs>
+    struct Generator<Shape, Output, std::tuple<Inputs...>>
     {
         Output generate(const uint64_t& index, const uint64_t& max_index) const&
         {
             std::vector<Output> results_to_mix;
 
-            for_each(generators, [&results_to_mix, &index, &max_index](const auto& generator)
+            for_each(inputs, [&results_to_mix, &index, &max_index](const auto& input)
             {
-                results_to_mix.emplace_back(generator.generate(index, max_index));
+                const Output& result = generator<Shape, Output>(input).generate(index, max_index);
+                results_to_mix.emplace_back(result);
             });
 
             return mix<Sample>(results_to_mix);
         }
 
-        std::tuple<Generators...> generators;
+        std::tuple<Inputs...> inputs;
     };
 }
 

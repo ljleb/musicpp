@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "generators/composite.hpp"
-#include "generators/partial.hpp"
+#include "generators/section.hpp"
 #include "generators/linear_interpolation.hpp"
 #include "generators/basic.hpp"
 #include "mixers/sample.hpp"
@@ -29,28 +29,15 @@ int main()
         //     },
         // }),
 
-        // generator<SINE, Sample>(Partial {
-        //     generator<SINE, Sample>(LinearInterpolation<Frequency> { 200, 000 }),
-        //     SAMPLE_RATE*0,
-        //     SAMPLE_RATE/8,
-        // }),
-        // generator<SINE, Sample>(Partial {
-        //     generator<SINE, Sample>(LinearInterpolation<Frequency> { 200, 000 }),
-        //     SAMPLE_RATE*1,
-        //     SAMPLE_RATE/8,
-        // }),
-        // generator<SINE, Sample>(Partial {
-        //     generator<SINE, Sample>(LinearInterpolation<Frequency> { 200, 000 }),
-        //     SAMPLE_RATE*2,
-        //     SAMPLE_RATE/8,
-        // }),
-        // generator<SINE, Sample>(Partial {
-        //     generator<SINE, Sample>(LinearInterpolation<Frequency> { 200, 000 }),
-        //     SAMPLE_RATE*3,
-        //     SAMPLE_RATE/8,
-        // }),
+        Section<Section<LinearInterpolation<Frequency>>, 4> {
+            {
+                { 200, 000 },
+                SAMPLE_RATE / 2,
+            },
+            SAMPLE_RATE,
+        },
 
-        generator<SINE, Sample>(LinearInterpolation<Frequency> { 3200, 1600 }),
+        LinearInterpolation<Frequency> { 3200, 1600 },
         // generator<SINE, Sample>(Frequency { 440*4 }),
         // generator<SINE, Sample>(LinearInterpolation<Frequency> { 000, 800 }),
     })};
