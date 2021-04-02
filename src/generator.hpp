@@ -8,6 +8,7 @@ namespace mpp
     enum GeneratorShape
     {
         SINE = 0,
+        SAW,
     };
 
     template <GeneratorShape Shape, typename Output, typename Input>

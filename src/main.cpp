@@ -13,38 +13,54 @@
 
 #include <cstdint>
 
+float frequency_of_key(const float& note)
+{
+    return 440 * std::pow(2, (note - 49) / 12);
+}
+
 int main()
 {
     using namespace mpp;
 
-    const auto& master_generator { generator<SINE, Sample>(std::tuple {
-        // generator<SINE, Sample>(BezierInterpolation<Frequency, 2> {
+    const auto& master_generator { generator<SAW, Sample>(std::tuple {
+        // Section<Section<LinearInterpolation<Frequency>>, 3>
+        // {
         //     {
-        //         { 0, 1000 },
-        //         { 1000, 0 },
+        //         { 200, 0 },
+        //         SAMPLE_RATE / 2,
         //     },
-        //     {
-        //         { 1000, 0 },
-        //         { 0, 1000 },
-        //     },
-        // }),
+        //     SAMPLE_RATE,
+        //     SAMPLE_RATE,
+        // },
 
-        Section<Section<LinearInterpolation<Frequency>>, 4> {
-            {
-                { 200, 000 },
-                SAMPLE_RATE / 2,
-            },
-            SAMPLE_RATE,
-        },
+        // LinearInterpolation<Frequency> { 300, 0 },
+        LinearInterpolation<Frequency> { 300, 0 },
 
-        LinearInterpolation<Frequency> { 3200, 1600 },
-        // generator<SINE, Sample>(Frequency { 440*4 }),
-        // generator<SINE, Sample>(LinearInterpolation<Frequency> { 000, 800 }),
+        // Section<Frequency> {
+        //     input: frequency_of_key(44),
+        //     size: SAMPLE_RATE / 4,
+        //     offset: (SAMPLE_RATE / 4) * 0,
+        // },
+        // Section<Frequency> {
+        //     input: frequency_of_key(46),
+        //     size: SAMPLE_RATE / 4,
+        //     offset: (SAMPLE_RATE / 4) * 1,
+        // },
+        // Section<Frequency> {
+        //     input: frequency_of_key(48),
+        //     size: SAMPLE_RATE / 4,
+        //     offset: (SAMPLE_RATE / 4) * 2,
+        // },
+        // Section<Frequency> {
+        //     input: frequency_of_key(46),
+        //     size: SAMPLE_RATE / 4,
+        //     offset: (SAMPLE_RATE / 4) * 3,
+        // },
     })};
 
     Samples result {};
 
-    for (uint64_t result_index {0}; result_index < result.size(); ++result_index)
+    for (uint64_t result_index { 0 }; result_index < result.size(); ++result_index)
     {
         result[result_index] = master_generator.generate(result_index, result.size());
     }

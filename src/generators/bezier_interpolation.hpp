@@ -9,18 +9,17 @@
 namespace mpp
 {
     template <typename Input, uint64_t order>
-    class BezierInterpolation;
+    struct BezierInterpolation;
 
-    namespace
+    namespace _internal
     {
         template <typename Input, uint64_t order>
-        class BezierInterpolationBase
+        struct BezierInterpolationBase
         {
             using NestedInput = std::conditional_t<order == 0,
                 Input,
                 BezierInterpolation<Input, order - 1>>;
 
-        public:
             constexpr BezierInterpolationBase(const NestedInput& min, const NestedInput& max):
                 _min { min },
                 _max { max }
@@ -28,8 +27,8 @@ namespace mpp
 
             constexpr Input interpolate(const uint64_t& index, const uint64_t& max_index) const&
             {
-                Input min {0};
-                Input max {0};
+                Input min { 0 };
+                Input max { 0 };
 
                 if constexpr (order == 0)
                 {
@@ -43,7 +42,7 @@ namespace mpp
                 }
 
                 const float& ratio { float(index) / float(max_index) };
-                return (min * (1 - ratio)) + (max * ratio);
+                return min * (1 - ratio) + max * ratio;
             }
 
         protected:
@@ -53,22 +52,20 @@ namespace mpp
     }
 
     template <typename Input, uint64_t order>
-    class BezierInterpolation : public BezierInterpolationBase<Input, order>
+    struct BezierInterpolation : public _internal::BezierInterpolationBase<Input, order>
     {
-        using NestedInput = typename BezierInterpolationBase<Input, order>::NestedInput;
+        using NestedInput = typename _internal::BezierInterpolationBase<Input, order>::NestedInput;
 
-    public:
         constexpr BezierInterpolation(const NestedInput& min, const NestedInput& max):
-            BezierInterpolationBase<Input, order> { min, max }
+            _internal::BezierInterpolationBase<Input, order> { min, max }
         {}
     };
 
     template <>
-    class BezierInterpolation<Frequency, 0> : public BezierInterpolationBase<Frequency, 0>
+    struct BezierInterpolation<Frequency, 0> : public _internal::BezierInterpolationBase<Frequency, 0>
     {
-    public:
         constexpr BezierInterpolation(const Frequency& min, const Frequency& max):
-            BezierInterpolationBase<Frequency, 0> { min, min + (max - min) / 2 }
+            _internal::BezierInterpolationBase<Frequency, 0> { min, { min + (max - min) / 2 } }
         {}
     };
 
@@ -78,8 +75,6 @@ namespace mpp
         Output generate(const uint64_t& index, const uint64_t& max_index) const&
         {
             const Input& interpolated_input { interpolation.interpolate(index, max_index) };
-            std::cout << interpolated_input << '\n';
-
             return generator<Shape, Output>(interpolated_input).generate(index, max_index);
         }
 

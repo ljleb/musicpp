@@ -8,9 +8,8 @@
 
 namespace mpp
 {
-    class Frequency
+    struct Frequency
     {
-    public:
         constexpr Frequency(const float& frequency):
             _frequency(frequency)
         {}
@@ -29,7 +28,18 @@ namespace mpp
     {
         Sample generate(const uint64_t& index, const uint64_t& max_index) const&
         {
-            return std::sin(frequency * 2 * M_PI * index / SAMPLE_RATE);
+            return std::sin(2 * M_PI * frequency * index / SAMPLE_RATE);
+        }
+
+        Frequency frequency;
+    };
+
+    template <>
+    struct Generator<SAW, Sample, Frequency>
+    {
+        Sample generate(const uint64_t& index, const uint64_t& max_index) const&
+        {
+            return std::fmod(2 * frequency * index / SAMPLE_RATE, 2) - 1;
         }
 
         Frequency frequency;
