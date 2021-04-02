@@ -1,12 +1,10 @@
 #ifndef MPP_GENERATORS_BEZIER_HPP
 #define MPP_GENERATORS_BEZIER_HPP
 
-#include "frequency.hpp"
-#include "basic.hpp"
 #include "generator.hpp"
 
 #include "math.hpp"
-#include <cmath>
+#include <algorithm>
 
 namespace mpp
 {

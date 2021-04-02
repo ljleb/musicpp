@@ -1,8 +1,6 @@
 #ifndef MPP_CONTROLS_FREQUENCY_HPP
 #define MPP_CONTROLS_FREQUENCY_HPP
 
-#include "generator.hpp"
-
 #include "math.hpp"
 #include <cmath>
 

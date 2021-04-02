@@ -1,8 +1,8 @@
 #ifndef MPP_GENERATORS_LOW_PASS_HPP
 #define MPP_GENERATORS_LOW_PASS_HPP
 
-#include "basic.hpp"
 #include "bezier.hpp"
+#include "frequency.hpp"
 
 #include "generator.hpp"
 #include "mixer.hpp"
