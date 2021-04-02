@@ -14,12 +14,12 @@ namespace mpp
     template <GeneratorShape Shape, typename Output, typename Input>
     struct Generator<Shape, Output, std::tuple<Input>>
     {
-        Output generate(const uint64_t& index, const uint64_t& max_index) const&
+        Output generate(const uint64_t& index, const uint64_t& max_index)
         {
             return generator<Shape, Output>(std::get<0>(input)).generate(index, max_index);
         }
 
-        std::tuple<Input> input;
+        std::tuple<Input>& input;
     };
 
     template <GeneratorShape Shape, typename Output, typename FirstInput, typename SecondInput, typename... Inputs>
@@ -38,7 +38,7 @@ namespace mpp
             return mix<Output>(results_to_mix);
         }
 
-        std::tuple<FirstInput, SecondInput, Inputs...> inputs;
+        std::tuple<FirstInput, SecondInput, Inputs...>& inputs;
     };
 }
 

@@ -10,13 +10,20 @@ namespace mpp
     struct Section
     {
         constexpr Section(
-            const Input& input,
-            const uint64_t& size,
-            const uint64_t& offset = 0
+            uint64_t&& size,
+            uint64_t&& offset,
+            Input&& input
         ):
-            _input { input },
-            _size { size },
-            _offset { offset }
+            _size { std::move(size) },
+            _offset { std::move(offset) },
+            _input { std::move(input) }
+        {}
+
+        constexpr Section(
+            uint64_t&& size,
+            Input&& input
+        ):
+            Section(std::move(size), 0, std::move(input))
         {}
 
         constexpr bool can_generate(const uint64_t& index) const&
@@ -40,9 +47,9 @@ namespace mpp
         }
 
     private:
-        Input _input;
         uint64_t _size;
         uint64_t _offset;
+        Input _input;
     };
 
     template <GeneratorShape Shape, typename Output, typename Input, uint64_t times>
@@ -59,7 +66,7 @@ namespace mpp
                 .generate(section.relative_index(index), section.size());
         }
 
-        Section<Input, times> section;
+        Section<Input, times>& section;
     };
 }
 

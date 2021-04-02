@@ -3,6 +3,8 @@
 #include "generators/composite.hpp"
 #include "generators/section.hpp"
 #include "generators/linear_interpolation.hpp"
+#include "generators/low_pass.hpp"
+#include "generators/high_pass.hpp"
 #include "generators/basic.hpp"
 #include "mixers/sample.hpp"
 
@@ -22,7 +24,7 @@ int main()
 {
     using namespace mpp;
 
-    const auto& master_generator { generator<SAW, Sample>(std::tuple {
+    auto&& master_input = std::tuple {
         // Section<Section<LinearInterpolation<Frequency>>, 3>
         // {
         //     {
@@ -34,7 +36,10 @@ int main()
         // },
 
         // LinearInterpolation<Frequency> { 300, 0 },
-        LinearInterpolation<Frequency> { 300, 0 },
+        HighPass<LinearInterpolation<Frequency>> {
+            SAMPLE_RATE / 32,
+            { 600, 0 }
+        },
 
         // Section<Frequency> {
         //     input: frequency_of_key(44),
@@ -56,7 +61,9 @@ int main()
         //     size: SAMPLE_RATE / 4,
         //     offset: (SAMPLE_RATE / 4) * 3,
         // },
-    })};
+    };
+
+    auto&& master_generator { generator<SINE, Sample>(master_input) };
 
     Samples result {};
 

@@ -13,41 +13,53 @@ namespace mpp
 
     namespace _internal
     {
+        template <typename Input>
+        constexpr Input interpolate(const Input& min, const Input& max, const float& ratio)
+        {
+            return min + (max - min) * ratio;
+        }
+
         template <typename Input, uint64_t order>
         struct BezierInterpolationBase
         {
-            using NestedInput = std::conditional_t<order == 0,
-                Input,
-                BezierInterpolation<Input, order - 1>>;
+            using Maxim = BezierInterpolation<Input, order - 1>;
 
-            constexpr BezierInterpolationBase(const NestedInput& min, const NestedInput& max):
-                _min { min },
-                _max { max }
+            constexpr BezierInterpolationBase(Maxim&& min, Maxim&& max):
+                _min { std::move(min) },
+                _max { std::move(max) }
             {}
 
-            constexpr Input interpolate(const uint64_t& index, const uint64_t& max_index) const&
+            constexpr Input& interpolate(const uint64_t& index, const uint64_t& max_index) const&
             {
-                Input min { 0 };
-                Input max { 0 };
-
-                if constexpr (order == 0)
-                {
-                    min = _min;
-                    max = _max;
-                }
-                else
-                {
-                    min = _min.interpolate(index, max_index);
-                    max = _max.interpolate(index, max_index);
-                }
-
                 const float& ratio { float(index) / float(max_index) };
-                return min * (1 - ratio) + max * ratio;
+                return _internal::interpolate(_min.interpolate(ratio), _max.interpolate(ratio), ratio);
             }
 
-        protected:
-            NestedInput _min;
-            NestedInput _max;
+        private:
+            Maxim _min;
+            Maxim _max;
+        };
+
+        template <typename Input>
+        struct BezierInterpolationBase<Input, 0>
+        {
+            constexpr BezierInterpolationBase(Input&& min, Input&& max):
+                _min { std::move(min) },
+                _max { std::move(max) },
+                _interpolated { _min }
+            {}
+
+            constexpr Input& interpolate(const uint64_t& index, const uint64_t& max_index)
+            {
+                const float& ratio { float(index) / float(max_index) };
+                _interpolated = _internal::interpolate(_min, _max, ratio);
+                return _interpolated;
+            }
+
+        private:
+            Input _min;
+            Input _max;
+            Input _interpolated;
         };
     }
 
@@ -56,7 +68,7 @@ namespace mpp
     {
         using NestedInput = typename _internal::BezierInterpolationBase<Input, order>::NestedInput;
 
-        constexpr BezierInterpolation(const NestedInput& min, const NestedInput& max):
+        constexpr BezierInterpolation(NestedInput&& min, NestedInput&& max):
             _internal::BezierInterpolationBase<Input, order> { min, max }
         {}
     };
@@ -64,8 +76,11 @@ namespace mpp
     template <>
     struct BezierInterpolation<Frequency, 0> : public _internal::BezierInterpolationBase<Frequency, 0>
     {
-        constexpr BezierInterpolation(const Frequency& min, const Frequency& max):
-            _internal::BezierInterpolationBase<Frequency, 0> { min, { min + (max - min) / 2 } }
+        constexpr BezierInterpolation(Frequency&& min, Frequency&& max):
+            _internal::BezierInterpolationBase<Frequency, 0> {
+                std::move(min),
+                { _internal::interpolate(min, max, .5f) },
+            }
         {}
     };
 
@@ -74,11 +89,11 @@ namespace mpp
     {
         Output generate(const uint64_t& index, const uint64_t& max_index) const&
         {
-            const Input& interpolated_input { interpolation.interpolate(index, max_index) };
+            Input& interpolated_input { interpolation.interpolate(index, max_index) };
             return generator<Shape, Output>(interpolated_input).generate(index, max_index);
         }
 
-        BezierInterpolation<Input, order> interpolation;
+        BezierInterpolation<Input, order>& interpolation;
     };
 }
 

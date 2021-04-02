@@ -18,7 +18,7 @@ namespace mpp
     };
 
     template <GeneratorShape Shape, typename Output, typename Input>
-    Generator<Shape, Output, Input> generator(const Input& input)
+    Generator<Shape, Output, Input> generator(Input& input)
     {
         return Generator<Shape, Output, Input> { input };
     }
