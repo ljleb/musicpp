@@ -5,22 +5,16 @@
 
 namespace mpp
 {
-    enum GeneratorShape
-    {
-        SINE = 0,
-        SAW,
-    };
-
-    template <GeneratorShape Shape, typename Output, typename Input>
+    template <typename Output, typename Input>
     struct Generator
     {
         Output generate(const uint64_t& index, const uint64_t& max_index);
     };
 
-    template <GeneratorShape Shape, typename Output, typename Input>
-    Generator<Shape, Output, Input> generator(Input& input)
+    template <typename Output, typename Input>
+    Generator<Output, Input> generator(Input& input)
     {
-        return Generator<Shape, Output, Input> { input };
+        return Generator<Output, Input> { input };
     }
 }
 

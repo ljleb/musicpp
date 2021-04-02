@@ -31,7 +31,7 @@ namespace mpp
             return index >= _offset && index < _offset + _size * times;
         }
 
-        constexpr const Input& input() const&
+        constexpr Input& input()
         {
             return _input;
         }
@@ -52,8 +52,8 @@ namespace mpp
         Input _input;
     };
 
-    template <GeneratorShape Shape, typename Output, typename Input, uint64_t times>
-    struct Generator<Shape, Output, Section<Input, times>>
+    template <typename Output, typename Input, uint64_t times>
+    struct Generator<Output, Section<Input, times>>
     {
         constexpr Output generate(const uint64_t& index, const uint64_t& max_index) const&
         {
@@ -62,7 +62,7 @@ namespace mpp
                 return {};
             }
 
-            return generator<Shape, Output>(section.input())
+            return generator<Output>(section.input())
                 .generate(section.relative_index(index), section.size());
         }
 

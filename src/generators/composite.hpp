@@ -11,19 +11,19 @@
 
 namespace mpp
 {
-    template <GeneratorShape Shape, typename Output, typename Input>
-    struct Generator<Shape, Output, std::tuple<Input>>
+    template <typename Output, typename Input>
+    struct Generator<Output, std::tuple<Input>>
     {
         Output generate(const uint64_t& index, const uint64_t& max_index)
         {
-            return generator<Shape, Output>(std::get<0>(input)).generate(index, max_index);
+            return generator<Output>(std::get<0>(input)).generate(index, max_index);
         }
 
         std::tuple<Input>& input;
     };
 
-    template <GeneratorShape Shape, typename Output, typename FirstInput, typename SecondInput, typename... Inputs>
-    struct Generator<Shape, Output, std::tuple<FirstInput, SecondInput, Inputs...>>
+    template <typename Output, typename FirstInput, typename SecondInput, typename... Inputs>
+    struct Generator<Output, std::tuple<FirstInput, SecondInput, Inputs...>>
     {
         Output generate(const uint64_t& index, const uint64_t& max_index) const&
         {
@@ -31,7 +31,7 @@ namespace mpp
 
             for_each(inputs, [&results_to_mix, &index, &max_index](const auto& input)
             {
-                const Output& result { generator<Shape, Output>(input).generate(index, max_index) };
+                const Output& result { generator<Output>(input).generate(index, max_index) };
                 results_to_mix.emplace_back(result);
             });
 

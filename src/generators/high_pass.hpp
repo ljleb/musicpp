@@ -9,7 +9,7 @@
 
 namespace mpp
 {
-    template <typename Input>
+    template <typename Input, uint64_t order = 3>
     struct HighPass
     {
         constexpr HighPass(Frequency&& frequency, Input&& input):
@@ -21,28 +21,34 @@ namespace mpp
             return _low_pass.input();
         }
 
-        constexpr Sample filter_sample(const Sample& new_sample)
+        constexpr const Frequency& frequency() const&
         {
-            const Sample& low_passed_sample = _low_pass.filter_sample(new_sample);
+            return _low_pass.frequency();
+        }
+
+        constexpr Sample filter_sample(const Sample& new_sample, const double& ratio)
+        {
+            const Sample& low_passed_sample = _low_pass.filter_sample(new_sample, ratio);
             return new_sample - low_passed_sample;
         }
 
     private:
-        LowPass<Input> _low_pass;
+        LowPass<Input, order> _low_pass;
     };
 
-    template <GeneratorShape Shape, typename Input>
-    struct Generator<Shape, Sample, HighPass<Input>>
+    template <typename Input, uint64_t order>
+    struct Generator<Sample, HighPass<Input, order>>
     {
         Sample generate(const uint64_t& index, const uint64_t& max_index)
         {
-            const Sample& sample = generator<Shape, Sample>(high_pass.input())
+            const Sample& sample = generator<Sample>(high_pass.input())
                 .generate(index, max_index);
 
-            return high_pass.filter_sample(sample);
+            const double& ratio { high_pass.frequency() / double(SAMPLE_RATE) };
+            return high_pass.filter_sample(sample, ratio);
         }
 
-        HighPass<Input>& high_pass;
+        HighPass<Input, order>& high_pass;
     };
 }
 

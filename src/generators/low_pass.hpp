@@ -2,7 +2,7 @@
 #define MPP_GENERATORS_LOW_PASS_HPP
 
 #include "basic.hpp"
-#include "bezier_interpolation.hpp"
+#include "bezier.hpp"
 
 #include "generator.hpp"
 #include "mixer.hpp"
@@ -10,13 +10,42 @@
 
 namespace mpp
 {
-    template <typename Input>
+    template <typename Input, uint64_t order = 3>
     struct LowPass
     {
         constexpr LowPass(Frequency&& frequency, Input&& input):
-            _frequency { std::move(frequency) },
             _last_sample { 0 },
-            _input { std::move(input) }
+            _nested { std::move(frequency), std::move(input) }
+        {}
+
+        constexpr Input& input()
+        {
+            return _nested.input();
+        }
+
+        constexpr const Frequency& frequency() const&
+        {
+            return _nested.frequency();
+        }
+
+        constexpr Sample filter_sample(const Sample& new_sample, const double& ratio)
+        {
+            _last_sample = interpolate(_last_sample, new_sample, ratio);
+            return _nested.filter_sample(_last_sample, ratio);
+        }
+
+    private:
+        Sample _last_sample;
+        LowPass<Input, order - 1> _nested;
+    };
+
+    template <typename Input>
+    struct LowPass<Input, 0>
+    {
+        constexpr LowPass(Frequency&& frequency, Input&& input):
+            _frequency { std::move(frequency) },
+            _input { std::move(input) },
+            _last_sample { 0 }
         {}
 
         constexpr Input& input()
@@ -24,31 +53,36 @@ namespace mpp
             return _input;
         }
 
-        constexpr Sample filter_sample(const Sample& new_sample)
+        constexpr const Frequency& frequency() const&
         {
-            const float& ratio { float(_frequency) / float(SAMPLE_RATE) };
-            _last_sample = _internal::interpolate(_last_sample, new_sample, ratio);
+            return _frequency;
+        }
+
+        constexpr Sample filter_sample(const Sample& new_sample, const double& ratio)
+        {
+            _last_sample = interpolate(_last_sample, new_sample, ratio);
             return _last_sample;
         }
 
     private:
         Frequency _frequency;
-        Sample _last_sample;
         Input _input;
+        Sample _last_sample;
     };
 
-    template <GeneratorShape Shape, typename Input>
-    struct Generator<Shape, Sample, LowPass<Input>>
+    template <typename Input, uint64_t order>
+    struct Generator<Sample, LowPass<Input, order>>
     {
         Sample generate(const uint64_t& index, const uint64_t& max_index)
         {
-            const Sample& sample = generator<Shape, Sample>(low_pass.input())
+            const Sample& sample = generator<Sample>(low_pass.input())
                 .generate(index, max_index);
 
-            return low_pass.filter_sample(sample);
+            const double& ratio { low_pass.frequency() / double(SAMPLE_RATE) };
+            return low_pass.filter_sample(sample, ratio);
         }
 
-        LowPass<Input>& low_pass;
+        LowPass<Input, order>& low_pass;
     };
 }
 

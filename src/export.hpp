@@ -19,7 +19,7 @@ namespace mpp
         }
 
         file.seekp(0);
-        file.write(reinterpret_cast<const char*>(samples.data()), sizeof(float) * samples.size());
+        file.write(reinterpret_cast<const char*>(samples.data()), sizeof(Sample) * samples.size());
     }
 }
 
