@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "generators/composite.hpp"
+#include "generators/loop.hpp"
 #include "generators/section.hpp"
 #include "generators/bezier.hpp"
 #include "generators/low_pass.hpp"

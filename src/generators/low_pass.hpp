@@ -12,9 +12,6 @@
 
 namespace mpp
 {
-    template <typename Input, uint64_t order>
-    struct RecursiveLowPassData;
-
     template <typename Input, uint64_t order = 4>
     struct LowPass
     {
