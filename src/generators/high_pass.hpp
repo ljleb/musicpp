@@ -9,31 +9,32 @@
 
 namespace mpp
 {
-    template <typename Input, uint64_t order = 3>
+    template <typename Input, uint64_t order = 4>
     struct HighPass
     {
         constexpr HighPass(Frequency&& frequency, Input&& input):
-            _low_pass { std::move(frequency), std::move(input) }
+            _input { std::move(input) },
+            _nested { std::move(frequency), std::move(input) }
         {}
 
-        constexpr Input& input()
+        constexpr Sample generate_sample(const uint64_t& index, const uint64_t& max_index)
         {
-            return _low_pass.input();
-        }
+            const Sample& output { generator<Sample>(_input).generate(index, max_index) };
 
-        constexpr const Frequency& frequency() const&
-        {
-            return _low_pass.frequency();
-        }
-
-        constexpr Sample filter_sample(const Sample& new_sample, const double& ratio)
-        {
-            const Sample& low_passed_sample = _low_pass.filter_sample(new_sample, ratio);
-            return new_sample - low_passed_sample;
+            if constexpr (order > 0)
+            {
+                const Sample& low_passed_output { _nested.generate_sample(index, max_index) };
+                return output - low_passed_output;
+            }
+            else
+            {
+                return output;
+            }
         }
 
     private:
-        LowPass<Input, order> _low_pass;
+        Input _input;
+        LowPass<Input, order> _nested;
     };
 
     template <typename Input, uint64_t order>
@@ -41,11 +42,7 @@ namespace mpp
     {
         Sample generate(const uint64_t& index, const uint64_t& max_index)
         {
-            const Sample& sample = generator<Sample>(high_pass.input())
-                .generate(index, max_index);
-
-            const double& ratio { high_pass.frequency() / double(SAMPLE_RATE) };
-            return high_pass.filter_sample(sample, ratio);
+            return high_pass.generate_sample(index, max_index);
         }
 
         HighPass<Input, order>& high_pass;

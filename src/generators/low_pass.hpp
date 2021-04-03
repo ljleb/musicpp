@@ -1,73 +1,56 @@
 #ifndef MPP_GENERATORS_LOW_PASS_HPP
 #define MPP_GENERATORS_LOW_PASS_HPP
 
-#include "bezier.hpp"
+#include "latency.hpp"
 #include "frequency.hpp"
 
 #include "generator.hpp"
 #include "mixer.hpp"
 #include "project_config.hpp"
 
+#include <array>
+
 namespace mpp
 {
-    template <typename Input, uint64_t order = 3>
+    template <typename Input, uint64_t order>
+    struct RecursiveLowPassData;
+
+    template <typename Input, uint64_t order = 4>
     struct LowPass
     {
         constexpr LowPass(Frequency&& frequency, Input&& input):
-            _last_sample { 0 },
-            _nested { std::move(frequency), std::move(input) }
-        {}
-
-        constexpr Input& input()
-        {
-            return _nested.input();
-        }
-
-        constexpr const Frequency& frequency() const&
-        {
-            return _nested.frequency();
-        }
-
-        constexpr Sample filter_sample(const Sample& new_sample, const double& ratio)
-        {
-            _last_sample = interpolate(_last_sample, new_sample, ratio);
-            return _nested.filter_sample(_last_sample, ratio);
-        }
-
-    private:
-        Sample _last_sample;
-        LowPass<Input, order - 1> _nested;
-    };
-
-    template <typename Input>
-    struct LowPass<Input, 0>
-    {
-        constexpr LowPass(Frequency&& frequency, Input&& input):
+            _latency { 0 },
             _frequency { std::move(frequency) },
             _input { std::move(input) },
-            _last_sample { 0 }
+            _last_wet_samples {}
         {}
 
-        constexpr Input& input()
+        constexpr Sample generate_sample(const uint64_t& index, const uint64_t& max_index)
         {
-            return _input;
-        }
+            if (!_latency.can_delay_index(index, max_index))
+            {
+                return {};
+            }
 
-        constexpr const Frequency& frequency() const&
-        {
-            return _frequency;
-        }
+            auto&& nested_generator { generator<Sample>(_input) };
+            Sample output { nested_generator.generate(_latency.delay_index(index), max_index) };
 
-        constexpr Sample filter_sample(const Sample& new_sample, const double& ratio)
-        {
-            _last_sample = interpolate(_last_sample, new_sample, ratio);
-            return _last_sample;
+            const double& ratio { _frequency / SAMPLE_RATE };
+            for (uint64_t i { 0 }; i < _last_wet_samples.size(); ++i)
+            {
+                const Sample& interpolated = interpolate(_last_wet_samples[i], output, ratio);
+                _last_wet_samples[i] = interpolated;
+                output = interpolated;
+            }
+
+            return output;
         }
 
     private:
+        Latency _latency;
         Frequency _frequency;
         Input _input;
-        Sample _last_sample;
+        std::array<Sample, order> _last_wet_samples;
     };
 
     template <typename Input, uint64_t order>
@@ -75,11 +58,7 @@ namespace mpp
     {
         Sample generate(const uint64_t& index, const uint64_t& max_index)
         {
-            const Sample& sample = generator<Sample>(low_pass.input())
-                .generate(index, max_index);
-
-            const double& ratio { low_pass.frequency() / double(SAMPLE_RATE) };
-            return low_pass.filter_sample(sample, ratio);
+            return low_pass.generate_sample(index, max_index);
         }
 
         LowPass<Input, order>& low_pass;

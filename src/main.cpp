@@ -20,9 +20,9 @@ int main()
     using namespace mpp;
 
     auto&& master_input = std::tuple {
-        Section<Bezier<Basic<SINE>>, 1> {
-            SAMPLE_RATE * 1,
-            { Frequency::of_key(49), { 0 } },
+        LowPass<Basic<SAW>, 0> {
+            Frequency::of_key(40),
+            Frequency::of_key(30),
         },
     };
 
