@@ -9,21 +9,21 @@
 
 namespace mpp
 {
-    template <typename Input, uint64_t order = 4>
+    template <typename CutoffControl, typename OrderControl, typename Input>
     struct HighPass
     {
-        constexpr HighPass(Frequency&& frequency, Input&& input):
-            _input { std::move(input) },
-            _nested { std::move(frequency), std::move(input) }
+        constexpr HighPass(const CutoffControl& cutoff, const OrderControl& order, const Input& input):
+            _input { input },
+            _nested { cutoff, order, input }
         {}
 
-        constexpr Sample generate_sample(const uint64_t& index, const uint64_t& max_index)
+        constexpr Sample generate_sample(const TimePoint& time)
         {
-            const Sample& output { generator<Sample>(_input).generate(index, max_index) };
+            const Sample& output { generator<Sample>(_input).generate(time) };
 
-            if constexpr (order > 0)
+            if (_nested._order.interpolate_control(time) > 0)
             {
-                const Sample& low_passed_output { _nested.generate_sample(index, max_index) };
+                const Sample& low_passed_output { _nested.generate_sample(time) };
                 return output - low_passed_output;
             }
             else
@@ -34,18 +34,18 @@ namespace mpp
 
     private:
         Input _input;
-        LowPass<Input, order> _nested;
+        LowPass<CutoffControl, OrderControl, Input> _nested;
     };
 
-    template <typename Input, uint64_t order>
-    struct Generator<Sample, HighPass<Input, order>>
+    template <typename CutoffControl, typename OrderControl, typename Input>
+    struct Generator<Sample, HighPass<CutoffControl, OrderControl, Input>>
     {
-        Sample generate(const uint64_t& index, const uint64_t& max_index)
+        Sample generate(const TimePoint& time)
         {
-            return high_pass.generate_sample(index, max_index);
+            return high_pass.generate_sample(time);
         }
 
-        HighPass<Input, order>& high_pass;
+        HighPass<CutoffControl, OrderControl, Input>& high_pass;
     };
 }
 

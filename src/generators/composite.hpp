@@ -11,34 +11,38 @@
 
 namespace mpp
 {
-    template <typename Output, typename Input>
-    struct Generator<Output, std::tuple<Input>>
+    template <typename... Inputs>
+    struct Mix : public std::tuple<Inputs...>
     {
-        Output generate(const uint64_t& index, const uint64_t& max_index)
-        {
-            return generator<Output>(std::get<0>(input)).generate(index, max_index);
-        }
-
-        std::tuple<Input>& input;
+        constexpr Mix(Inputs&&... inputs):
+            std::tuple<Inputs...> { std::forward<Inputs>(inputs)... }
+        {}
     };
 
-    template <typename Output, typename FirstInput, typename SecondInput, typename... Inputs>
-    struct Generator<Output, std::tuple<FirstInput, SecondInput, Inputs...>>
+    template <typename Output, typename... Inputs>
+    struct Generator<Output, Mix<Inputs...>>
     {
-        Output generate(const uint64_t& index, const uint64_t& max_index) const&
+        Output generate(const TimePoint& time)
         {
-            std::vector<Output> results_to_mix;
-
-            for_each(inputs, [&results_to_mix, &index, &max_index](const auto& input)
+            if constexpr (sizeof...(Inputs) == 1)
             {
-                const Output& result { generator<Output>(input).generate(index, max_index) };
-                results_to_mix.emplace_back(result);
-            });
+                return generator<Output>(std::get<0>(inputs)).generate(time);
+            }
+            else
+            {
+                std::vector<Output> results_to_mix;
 
-            return mix<Output>(results_to_mix);
+                for_each(static_cast<std::tuple<Inputs...>&>(inputs), [&results_to_mix, &time](auto& input)
+                {
+                    const Output& result { generator<Output>(input).generate(time) };
+                    results_to_mix.emplace_back(result);
+                });
+
+                return mix<Output>(results_to_mix);
+            }
         }
 
-        std::tuple<FirstInput, SecondInput, Inputs...>& inputs;
+        Mix<Inputs...>& inputs;
     };
 }
 

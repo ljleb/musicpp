@@ -1,7 +1,8 @@
 #ifndef MPP_GENERATORS_BASIC_HPP
 #define MPP_GENERATORS_BASIC_HPP
 
-#include "frequency.hpp"
+#include "controls/steady.hpp"
+
 #include "generator.hpp"
 #include "project_config.hpp"
 
@@ -10,54 +11,60 @@
 
 namespace mpp
 {
-    enum BasicShape
-    {
-        SINE = 0,
-        SAW,
-    };
-
-    template <BasicShape basic_shape>
+    template <typename FrequencyControl>
     struct Basic
     {
-        constexpr Basic(Frequency&& frequency):
-            _frequency { std::move(frequency) }
+        constexpr Basic(const FrequencyControl& frequency):
+            _frequency { frequency }
         {}
 
-        constexpr const Frequency& frequency() const&
+        constexpr const FrequencyControl& frequency() const&
         {
             return _frequency;
         }
 
     private:
-        Frequency _frequency;
+        FrequencyControl _frequency;
     };
 
-    template <BasicShape shape>
-    constexpr Basic<shape> interpolate(const Basic<shape>& min, const Basic<shape>& max, const double& ratio)
+    template <typename FrequencyControl>
+    struct BasicSine : public Basic<FrequencyControl>
     {
-        return { interpolate(min.frequency(), max.frequency(), ratio) };
-    }
-
-    template <>
-    struct Generator<Sample, Basic<SINE>>
-    {
-        Sample generate(const uint64_t& index, const uint64_t& max_index)
-        {
-            return std::sin(2 * M_PI * sine_shape.frequency() * index / SAMPLE_RATE);
-        }
-
-        Basic<SINE>& sine_shape;
+        constexpr BasicSine(const FrequencyControl& frequency):
+            Basic<FrequencyControl> { frequency }
+        {}
     };
 
-    template <>
-    struct Generator<Sample, Basic<SAW>>
+    template <typename FrequencyControl>
+    struct BasicSaw : public Basic<FrequencyControl>
     {
-        Sample generate(const uint64_t& index, const uint64_t& max_index)
+        constexpr BasicSaw(const FrequencyControl& frequency):
+            Basic<FrequencyControl> { frequency }
+        {}
+    };
+
+    template <typename FrequencyControl>
+    struct Generator<Sample, BasicSine<FrequencyControl>>
+    {
+        Sample generate(const TimePoint& time)
         {
-            return std::fmod(2 * saw_shape.frequency() * index / SAMPLE_RATE, 2) - 1;
+            const double& frequency { basic.frequency().interpolate_control(time / 2) };
+            return std::sin(2 * M_PI * frequency * time.index / SAMPLE_RATE);
         }
 
-        Basic<SAW>& saw_shape;
+        BasicSine<FrequencyControl>& basic;
+    };
+
+    template <typename FrequencyControl>
+    struct Generator<Sample, BasicSaw<FrequencyControl>>
+    {
+        Sample generate(const TimePoint& time)
+        {
+            const double& frequency { basic.frequency().interpolate_control(time / 2) };
+            return std::fmod(2 * frequency * time.index / SAMPLE_RATE, 2) - 1;
+        }
+
+        BasicSaw<FrequencyControl>& basic;
     };
 }
 

@@ -11,8 +11,8 @@ namespace mpp
 {
     struct Latency
     {
-        constexpr Latency(int64_t&& delay):
-            _delay { std::move(delay) }
+        constexpr Latency(const int64_t& delay):
+            _delay { delay }
         {}
 
         constexpr bool can_delay_index(const uint64_t& index, const uint64_t& max_index) const&
