@@ -24,7 +24,7 @@ namespace mpp
         {}
 
         constexpr LowPass(const CutoffControl& cutoff, const Input& input):
-            LowPass<CutoffControl, OrderControl, Input> { cutoff, Steady<uint64_t> { 1 }, input }
+            LowPass<CutoffControl, uint64_t, Input> { cutoff, 1, input }
         {}
 
         constexpr Sample generate_sample(const TimePoint& time)
@@ -32,9 +32,9 @@ namespace mpp
             auto&& nested_generator { generator<Sample>(_input) };
             Sample output { nested_generator.generate(time) };
 
-            const double& actual_cutoff { _cutoff.interpolate_control(time) * _order.interpolate_control(time) };
+            const double& actual_cutoff { interpolate_control(_cutoff, time) * interpolate_control(_order, time) };
             const double& ratio { actual_cutoff / SAMPLE_RATE };
-            _last_wet_samples.resize(_order.interpolate_control(time));
+            _last_wet_samples.resize(interpolate_control(_order, time));
             for (uint64_t i { 0 }; i < _last_wet_samples.size(); ++i)
             {
                 const Sample& interpolated = interpolate(_last_wet_samples[i], output, ratio);
@@ -54,7 +54,7 @@ namespace mpp
 
     template <typename CutoffControl, typename Input>
     LowPass(const CutoffControl& cutoff, const Input& input) ->
-        LowPass<CutoffControl, Steady<uint64_t>, Input>;
+        LowPass<CutoffControl, uint64_t, Input>;
 
     template <typename CutoffControl, typename OrderControl, typename Input>
     struct Generator<Sample, LowPass<CutoffControl, OrderControl, Input>>

@@ -11,7 +11,13 @@
 
 namespace mpp
 {
-    template <typename FrequencyControl>
+    enum BasicShape
+    {
+        SINE = 0,
+        SAW,
+    };
+
+    template <BasicShape shape, typename FrequencyControl>
     struct Basic
     {
         constexpr Basic(const FrequencyControl& frequency):
@@ -27,44 +33,34 @@ namespace mpp
         FrequencyControl _frequency;
     };
 
-    template <typename FrequencyControl>
-    struct BasicSine : public Basic<FrequencyControl>
+    template <BasicShape shape, typename FrequencyControl>
+    Basic<shape, FrequencyControl> make_basic(FrequencyControl&& frequency)
     {
-        constexpr BasicSine(const FrequencyControl& frequency):
-            Basic<FrequencyControl> { frequency }
-        {}
-    };
+        return { std::forward<FrequencyControl>(frequency) };
+    }
 
     template <typename FrequencyControl>
-    struct BasicSaw : public Basic<FrequencyControl>
-    {
-        constexpr BasicSaw(const FrequencyControl& frequency):
-            Basic<FrequencyControl> { frequency }
-        {}
-    };
-
-    template <typename FrequencyControl>
-    struct Generator<Sample, BasicSine<FrequencyControl>>
+    struct Generator<Sample, Basic<SINE, FrequencyControl>>
     {
         Sample generate(const TimePoint& time)
         {
-            const double& frequency { basic.frequency().interpolate_control(time / 2) };
+            const double& frequency { interpolate_control(basic.frequency(), time / 2) };
             return std::sin(2 * M_PI * frequency * time.index / SAMPLE_RATE);
         }
 
-        BasicSine<FrequencyControl>& basic;
+        Basic<SINE, FrequencyControl>& basic;
     };
 
     template <typename FrequencyControl>
-    struct Generator<Sample, BasicSaw<FrequencyControl>>
+    struct Generator<Sample, Basic<SAW, FrequencyControl>>
     {
         Sample generate(const TimePoint& time)
         {
-            const double& frequency { basic.frequency().interpolate_control(time / 2) };
+            const double& frequency { interpolate_control(basic.frequency(), time / 2) };
             return std::fmod(2 * frequency * time.index / SAMPLE_RATE, 2) - 1;
         }
 
-        BasicSaw<FrequencyControl>& basic;
+        Basic<SAW, FrequencyControl>& basic;
     };
 }
 

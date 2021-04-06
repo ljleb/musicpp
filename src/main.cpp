@@ -30,52 +30,52 @@ int main(int argc, char* argv[])
         return 
             Section
             {
-                Steady { SAMPLE_RATE * 2 },
-                Steady { 0 },
-                Steady { 4 },
+                0,
+                SAMPLE_RATE * 2,
+                2,
                 Mix
                 {
                     Section
                     {
-                        Steady { note_size * 2 },
-                        Steady { note_offset * 7 },
-                        synth(3_G),
-                    },
-                    Section
-                    {
-                        Steady { note_size * 2 },
-                        Steady { note_offset * 5 },
-                        synth(3_B),
-                    },
-                    Section
-                    {
-                        Steady { note_size * 1 },
-                        Steady { note_offset * 4 },
-                        synth(4_C),
-                    },
-                    Section
-                    {
-                        Steady { note_size * 1 },
-                        Steady { note_offset * 3 },
+                        note_offset * 7,
+                        note_size * 2,
                         synth(4_G),
                     },
                     Section
                     {
-                        Steady { note_size * 1 },
-                        Steady { note_offset * 2 },
-                        synth(3_A),
+                        note_offset * 5,
+                        note_size * 2,
+                        synth(4_B),
                     },
                     Section
                     {
-                        Steady { note_size * 1 },
-                        Steady { note_offset * 1 },
-                        synth(3_A),
+                        note_offset * 4,
+                        note_size * 1,
+                        synth(5_C),
                     },
                     Section
                     {
-                        Steady { note_size * 1 },
-                        Steady { note_offset * 0 },
-                        synth(3_A),
+                        note_offset * 3,
+                        note_size * 1,
+                        synth(5_G),
+                    },
+                    Section
+                    {
+                        note_offset * 2,
+                        note_size * 1,
+                        synth(4_A),
+                    },
+                    Section
+                    {
+                        note_offset * 1,
+                        note_size * 1,
+                        synth(4_A),
+                    },
+                    Section
+                    {
+                        note_offset * 0,
+                        note_size * 1,
+                        synth(4_A),
                     },
                 }
             };
@@ -85,8 +85,8 @@ int main(int argc, char* argv[])
     {
         return LowPass
         {
-            Bezier { frequency, 0.0_steady },
-            BasicSaw { frequency },
+            Bezier { frequency * 2, 0 },
+            mpp::make_basic<SAW>(frequency * 2),
         };
     };
 
@@ -94,22 +94,22 @@ int main(int argc, char* argv[])
     {
         return LowPass
         {
-            Bezier { frequency, Bezier { frequency, 0.0_steady } },
-            BasicSine
-            {
+            Bezier { frequency, Bezier { frequency, 0 } },
+            make_basic<SINE>
+            (
                 Bezier
                 {
-                    frequency,
-                    Bezier { 0.0_steady, frequency },
-                },
-            },
+                    frequency / 2,
+                    Bezier { 0, frequency / 2 },
+                }
+            ),
         };
     };
 
     auto&& master_input = Mix
     {
         pattern(synth_a),
-        // pattern(synth_b),
+        pattern(synth_b),
     };
 
     auto&& master_generator { generator<Sample>(master_input) };

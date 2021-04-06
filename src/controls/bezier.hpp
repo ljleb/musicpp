@@ -17,13 +17,13 @@ namespace mpp
             _max { max }
         {}
 
-        constexpr auto interpolate_control(const TimePoint& time) const&
-        {
-            return interpolate(
-                _min.interpolate_control(time),
-                _max.interpolate_control(time),
-                time.completion());
-        }
+    friend constexpr auto interpolate_control(const Bezier<MinControl, MaxControl>& self, const TimePoint& time)
+    {
+        return interpolate(
+            static_cast<double>(interpolate_control(self._min, time)),
+            static_cast<double>(interpolate_control(self._max, time)),
+            time.completion());
+    }
 
     private:
         MinControl _min;

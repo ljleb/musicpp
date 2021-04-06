@@ -12,39 +12,39 @@ namespace mpp
     struct Section
     {
         constexpr Section(
-            const SizeControl& size,
             const OffsetControl& offset,
+            const SizeControl& size,
             const RepeatControl& repeat,
             const Input& input
         ):
-            _size { size },
             _offset { offset },
+            _size { size },
             _repeat { repeat },
             _input { input }
         {}
 
         constexpr Section(
-            const SizeControl& size,
             const OffsetControl& offset,
+            const SizeControl& size,
             const Input& input
         ):
-            Section<SizeControl, OffsetControl, Steady<uint64_t>, Input>
-            { size, offset, Steady<uint64_t> { 1 }, input }
+            Section<SizeControl, OffsetControl, uint64_t, Input>
+            { offset, size, 1, input }
         {}
 
         constexpr Section(
             const SizeControl& size,
             const Input& input
         ):
-            Section<SizeControl, Steady<uint64_t>, Steady<uint64_t>, Input>
-            { size, Steady<uint64_t> { 0 }, input }
+            Section<SizeControl, uint64_t, uint64_t, Input>
+            { 0, size, input }
         {}
 
         constexpr bool can_generate(const TimePoint& time) const&
         {
-            const auto& size { _size.interpolate_control(time) };
-            const auto& offset { _offset.interpolate_control(time) };
-            const auto& repeat { _repeat.interpolate_control(time) };
+            const auto& size { interpolate_control(_size, time) };
+            const auto& offset { interpolate_control(_offset, time) };
+            const auto& repeat { interpolate_control(_repeat, time) };
 
             return time.index >= offset && time.index < offset + size * repeat;
         }
@@ -56,25 +56,25 @@ namespace mpp
 
         constexpr TimePoint time_relative_to(const TimePoint& dry_time) const&
         {
-            const auto& size { _size.interpolate_control(dry_time) };
-            const auto& offset { _offset.interpolate_control(dry_time) };
-            return { (dry_time.index - offset) % size, size };
+            const auto& size { interpolate_control(_size, dry_time) };
+            const auto& offset { interpolate_control(_offset, dry_time) };
+            return { (dry_time.index - offset) % size, static_cast<uint64_t>(size) };
         }
 
     private:
-        SizeControl _size;
         OffsetControl _offset;
+        SizeControl _size;
         RepeatControl _repeat;
         Input _input;
     };
 
     template <typename SizeControl, typename OffsetControl, typename Input>
     Section(const SizeControl&, const OffsetControl&, const Input&) ->
-        Section<SizeControl, OffsetControl, Steady<uint64_t>, Input>;
+        Section<SizeControl, OffsetControl, uint64_t, Input>;
 
     template <typename SizeControl, typename Input>
     Section(const SizeControl&, const Input&) ->
-        Section<SizeControl, Steady<uint64_t>, Steady<uint64_t>, Input>;
+        Section<SizeControl, uint64_t, uint64_t, Input>;
 
     template <typename Output, typename SizeControl, typename OffsetControl, typename RepeatControl, typename Input>
     struct Generator<Output, Section<SizeControl, OffsetControl, RepeatControl, Input>>

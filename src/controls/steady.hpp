@@ -9,20 +9,10 @@
 namespace mpp
 {
     template <typename Value>
-    struct Steady
+    constexpr std::enable_if_t<std::is_arithmetic_v<Value>, Value> interpolate_control(const Value& self, const TimePoint& time)
     {
-        constexpr Steady(const Value& initial_value):
-            _value { initial_value }
-        {}
-
-        constexpr Value interpolate_control(const TimePoint& time) const&
-        {
-            return _value;
-        }
-
-    private:
-        Value _value;
-    };
+        return self;
+    }
 }
 
 #endif

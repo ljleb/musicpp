@@ -21,7 +21,7 @@ namespace mpp
         {
             const Sample& output { generator<Sample>(_input).generate(time) };
 
-            if (_nested._order.interpolate_control(time) > 0)
+            if (interpolate_control(_nested._order, time) > 0)
             {
                 const Sample& low_passed_output { _nested.generate_sample(time) };
                 return output - low_passed_output;
