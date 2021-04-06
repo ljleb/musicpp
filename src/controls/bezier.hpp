@@ -9,10 +9,10 @@
 
 namespace mpp
 {
-    template <typename Control>
+    template <typename MinControl, typename MaxControl>
     struct Bezier
     {
-        constexpr Bezier(const Control& min, const Control& max):
+        constexpr Bezier(const MinControl& min, const MaxControl& max):
             _min { min },
             _max { max }
         {}
@@ -26,8 +26,8 @@ namespace mpp
         }
 
     private:
-        Control _min;
-        Control _max;
+        MinControl _min;
+        MaxControl _max;
     };
 }
 
