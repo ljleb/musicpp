@@ -26,28 +26,59 @@ int main(int argc, char* argv[])
     auto&& pattern = [](const auto& synth)
     {
         const auto& note_size = SAMPLE_RATE / 8;
-        const auto& note_offset = SAMPLE_RATE / 2;
-        return Mix
-        {
+        const auto& note_offset = SAMPLE_RATE / 4;
+        return 
             Section
             {
-                Steady { note_size },
-                Steady { note_offset * 2 },
-                synth(4_G),
-            },
-            Section
-            {
-                Steady { note_size },
-                Steady { note_offset * 1 },
-                synth(4_E),
-            },
-            Section
-            {
-                Steady { note_size },
-                Steady { note_offset * 0 },
-                synth(4_C),
-            },
-        };
+                Steady { SAMPLE_RATE * 2 },
+                Steady { 0 },
+                Steady { 4 },
+                Mix
+                {
+                    Section
+                    {
+                        Steady { note_size * 2 },
+                        Steady { note_offset * 7 },
+                        synth(3_G),
+                    },
+                    Section
+                    {
+                        Steady { note_size * 2 },
+                        Steady { note_offset * 5 },
+                        synth(3_B),
+                    },
+                    Section
+                    {
+                        Steady { note_size * 1 },
+                        Steady { note_offset * 4 },
+                        synth(4_C),
+                    },
+                    Section
+                    {
+                        Steady { note_size * 1 },
+                        Steady { note_offset * 3 },
+                        synth(4_G),
+                    },
+                    Section
+                    {
+                        Steady { note_size * 1 },
+                        Steady { note_offset * 2 },
+                        synth(3_A),
+                    },
+                    Section
+                    {
+                        Steady { note_size * 1 },
+                        Steady { note_offset * 1 },
+                        synth(3_A),
+                    },
+                    Section
+                    {
+                        Steady { note_size * 1 },
+                        Steady { note_offset * 0 },
+                        synth(3_A),
+                    },
+                }
+            };
     };
 
     auto&& synth_a = [](const auto& frequency)
@@ -78,7 +109,7 @@ int main(int argc, char* argv[])
     auto&& master_input = Mix
     {
         pattern(synth_a),
-        pattern(synth_b),
+        // pattern(synth_b),
     };
 
     auto&& master_generator { generator<Sample>(master_input) };

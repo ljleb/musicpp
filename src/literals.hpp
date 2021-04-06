@@ -12,62 +12,62 @@ namespace mpp
 
     constexpr Steady<double> operator"" _C(long double key)
     {
-        return frequency_of_key(key * 12 - 4);
+        return frequency_of_key(key * 12 - 9);
     }
 
     constexpr Steady<double> operator"" _C(unsigned long long key)
     {
-        return frequency_of_key(static_cast<double>(key) * 12 - 4);
+        return frequency_of_key(static_cast<double>(key) * 12 - 9);
     }
 
     constexpr Steady<double> operator"" _D(long double key)
     {
-        return frequency_of_key(key * 12 - 3);
+        return frequency_of_key(key * 12 - 7);
     }
 
     constexpr Steady<double> operator"" _D(unsigned long long key)
     {
-        return frequency_of_key(static_cast<double>(key) * 12 - 3);
+        return frequency_of_key(static_cast<double>(key) * 12 - 7);
     }
 
     constexpr Steady<double> operator"" _E(long double key)
     {
-        return frequency_of_key(key * 12 - 2);
+        return frequency_of_key(key * 12 - 5);
     }
 
     constexpr Steady<double> operator"" _E(unsigned long long key)
     {
-        return frequency_of_key(static_cast<double>(key) * 12 - 2);
+        return frequency_of_key(static_cast<double>(key) * 12 - 5);
     }
 
     constexpr Steady<double> operator"" _F(long double key)
     {
-        return frequency_of_key(key * 12 - 1);
+        return frequency_of_key(key * 12 - 4);
     }
 
     constexpr Steady<double> operator"" _F(unsigned long long key)
     {
-        return frequency_of_key(static_cast<double>(key) * 12 - 1);
+        return frequency_of_key(static_cast<double>(key) * 12 - 4);
     }
 
     constexpr Steady<double> operator"" _G(long double key)
     {
-        return frequency_of_key(key * 12);
+        return frequency_of_key(key * 12 - 2);
     }
 
     constexpr Steady<double> operator"" _G(unsigned long long key)
     {
-        return frequency_of_key(static_cast<double>(key) * 12);
+        return frequency_of_key(static_cast<double>(key) * 12 - 2);
     }
 
     constexpr Steady<double> operator"" _A(long double key)
     {
-        return frequency_of_key(key * 12 + 1);
+        return frequency_of_key(key * 12);
     }
 
     constexpr Steady<double> operator"" _A(unsigned long long key)
     {
-        return frequency_of_key(static_cast<double>(key) * 12 + 1);
+        return frequency_of_key(static_cast<double>(key) * 12);
     }
 
     constexpr Steady<double> operator"" _B(long double key)
