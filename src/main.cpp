@@ -19,7 +19,7 @@
 
 #include <cstdint>
 
-int main()
+int main(int argc, char* argv[])
 {
     using namespace mpp;
 
@@ -91,7 +91,7 @@ int main()
         result[result_index] = master_generator.generate(time);
     }
 
-    write_samples_to("out/a.raw", result);
+    write_samples_to(argv[1], result);
 
     return 0;
 }
