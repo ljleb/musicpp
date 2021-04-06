@@ -17,6 +17,10 @@ namespace mpp
             _nested { cutoff, order, input }
         {}
 
+        constexpr HighPass(const CutoffControl& cutoff, const Input& input):
+            HighPass<CutoffControl, uint64_t, Input> { cutoff, 1, input }
+        {}
+
         constexpr Sample generate_sample(const TimePoint& time)
         {
             const Sample& output { generator<Sample>(_input).generate(time) };
@@ -36,6 +40,10 @@ namespace mpp
         Input _input;
         LowPass<CutoffControl, OrderControl, Input> _nested;
     };
+
+    template <typename CutoffControl, typename Input>
+    HighPass(const CutoffControl& cutoff, const Input& input) ->
+        HighPass<CutoffControl, uint64_t, Input>;
 
     template <typename CutoffControl, typename OrderControl, typename Input>
     struct Generator<Sample, HighPass<CutoffControl, OrderControl, Input>>

@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
     {
         return LowPass
         {
-            Bezier { frequency * 2, 0 },
+            Bezier { frequency * 64, 0 },
             mpp::make_basic<SAW>(frequency * 2),
         };
     };

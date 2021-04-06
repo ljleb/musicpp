@@ -14,6 +14,9 @@
 namespace mpp
 {
     template <typename CutoffControl, typename OrderControl, typename Input>
+    class HighPass;
+
+    template <typename CutoffControl, typename OrderControl, typename Input>
     struct LowPass
     {
         constexpr LowPass(const CutoffControl& cutoff, const OrderControl& order, const Input& input):
@@ -44,6 +47,8 @@ namespace mpp
 
             return output;
         }
+
+        friend class HighPass<CutoffControl, OrderControl, Input>;
 
     private:
         CutoffControl _cutoff;
