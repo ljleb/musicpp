@@ -2,7 +2,6 @@
 #define MPP_MIXERS_SAMPLE_HPP
 
 #include "mixer.hpp"
-#include "project_config.hpp"
 
 namespace mpp
 {
@@ -10,7 +9,7 @@ namespace mpp
     class Mixer<Sample>
     {
     public:
-        Sample mix(const Sample& left, const Sample& right) const&
+        Sample mix(Sample const& left, Sample const& right) const&
         {
             return left + right;
         }

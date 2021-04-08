@@ -12,12 +12,30 @@ namespace mpp
     template <typename MinControl, typename MaxControl>
     struct Bezier
     {
-        constexpr Bezier(const MinControl& min, const MaxControl& max):
+        constexpr Bezier(MinControl const& min, MaxControl const& max):
             _min { min },
             _max { max }
         {}
 
-    friend constexpr auto interpolate_control(const Bezier<MinControl, MaxControl>& self, const TimePoint& time)
+        template <typename A>
+        constexpr std::enable_if_t<std::is_arithmetic_v<A>, Bezier<MinControl, MaxControl>> operator/(A const& that) const&
+        {
+            return {
+                _min / 2,
+                _max / 2,
+            };
+        }
+
+        template <typename A>
+        constexpr std::enable_if_t<std::is_arithmetic_v<A>, Bezier<MinControl, MaxControl>> operator*(A const& that) const&
+        {
+            return {
+                _min * 2,
+                _max * 2,
+            };
+        }
+
+    friend constexpr auto interpolate_control(Bezier<MinControl, MaxControl> const& self, TimePoint const& time)
     {
         return interpolate(
             static_cast<double>(interpolate_control(self._min, time)),

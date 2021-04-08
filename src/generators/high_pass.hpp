@@ -5,25 +5,24 @@
 
 #include "generator.hpp"
 #include "mixer.hpp"
-#include "project_config.hpp"
 
 namespace mpp
 {
     template <typename CutoffControl, typename OrderControl, typename Input>
     struct HighPass
     {
-        constexpr HighPass(const CutoffControl& cutoff, const OrderControl& order, const Input& input):
+        constexpr HighPass(CutoffControl const& cutoff, OrderControl const& order, Input const& input):
             _input { input },
             _nested { cutoff, order, input }
         {}
 
-        constexpr HighPass(const CutoffControl& cutoff, const Input& input):
+        constexpr HighPass(CutoffControl const& cutoff, Input const& input):
             HighPass<CutoffControl, uint64_t, Input> { cutoff, 1, input }
         {}
 
-        constexpr Sample generate_sample(const TimePoint& time)
+        constexpr Sample generate_sample(TimePoint const& time)
         {
-            const Sample& output { generator<Sample>(_input).generate(time) };
+            Sample const& output { generator<Sample>(_input).generate(time) };
 
             if (interpolate_control(_nested._order, time) > 0)
             {
@@ -36,21 +35,30 @@ namespace mpp
             }
         }
 
-    private:
         Input _input;
         LowPass<CutoffControl, OrderControl, Input> _nested;
     };
 
     template <typename CutoffControl, typename Input>
-    HighPass(const CutoffControl& cutoff, const Input& input) ->
+    HighPass(CutoffControl const&, Input const& input) ->
         HighPass<CutoffControl, uint64_t, Input>;
 
     template <typename CutoffControl, typename OrderControl, typename Input>
     struct Generator<Sample, HighPass<CutoffControl, OrderControl, Input>>
     {
-        Sample generate(const TimePoint& time)
+        Sample generate(TimePoint const& time, Config const& config)
         {
             return high_pass.generate_sample(time);
+        }
+
+        constexpr uint64_t size() const&
+        {
+            return generator<Sample>(high_pass._nested).size();
+        }
+
+        constexpr uint64_t offset() const&
+        {
+            return generator<Sample>(high_pass._nested).offset();
         }
 
         HighPass<CutoffControl, OrderControl, Input>& high_pass;

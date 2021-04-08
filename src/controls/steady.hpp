@@ -9,7 +9,7 @@
 namespace mpp
 {
     template <typename Value>
-    constexpr std::enable_if_t<std::is_arithmetic_v<Value>, Value> interpolate_control(const Value& self, const TimePoint& time)
+    constexpr std::enable_if_t<std::is_arithmetic_v<Value>, Value> interpolate_control(Value const& self, TimePoint const& time)
     {
         return self;
     }

@@ -9,29 +9,29 @@ namespace mpp
     class Mixer
     {
     public:
-        A mix(const A& left, const A& right) const&;
+        A mix(A const& left, A const& right) const&;
     };
 
     template <typename A>
-    inline A mix(const A& left, const A& right)
+    inline A mix(A const& left, A const& right)
     {
         const mpp::Mixer<A> mixer {};
         return mixer.mix(left, right);
     }
 
     template <typename A, typename... MoreInputs>
-    inline A mix(const A& first, const A& second, const A& third, MoreInputs&&... more)
+    inline A mix(A const& first, A const& second, A const& third, MoreInputs&&... more)
     {
         const A& mixed_more { mix(second, third, std::forward<MoreInputs...>(more)...) };
         return mix<A>(first, mixed_more);
     }
 
     template <typename A, typename Iterable>
-    A mix(const Iterable& iterable)
+    A mix(Iterable const& iterable)
     {
         A result {};
 
-        for (const A& input: iterable)
+        for (A const& input: iterable)
         {
             result = mix(result, input);
         }

@@ -4,7 +4,7 @@
 namespace mpp
 {
     template <typename Input>
-    constexpr Input interpolate(const Input& min, const Input& max, const double& ratio)
+    constexpr Input interpolate(Input const& min, Input const& max, double const& ratio)
     {
         return min + (max - min) * ratio;
     }
