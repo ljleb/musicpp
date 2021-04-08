@@ -3,7 +3,6 @@
 
 #include "generator.hpp"
 
-#include "math.hpp"
 #include <cmath>
 
 namespace mpp

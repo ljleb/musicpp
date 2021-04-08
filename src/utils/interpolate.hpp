@@ -1,5 +1,5 @@
-#ifndef MPP_MATH_HPP
-#define MPP_MATH_HPP
+#ifndef MPP_UTILS_INTERPOLATE_HPP
+#define MPP_UTILS_INTERPOLATE_HPP
 
 namespace mpp
 {

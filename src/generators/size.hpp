@@ -2,6 +2,7 @@
 #define MPP_GENERATORS_SIZE_HPP
 
 #include "generator.hpp"
+
 #include <cstdint>
 
 namespace mpp

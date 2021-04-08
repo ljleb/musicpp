@@ -4,7 +4,7 @@
 #include "steady.hpp"
 #include "generator.hpp"
 
-#include "math.hpp"
+#include "utils/interpolate.hpp"
 #include <algorithm>
 
 namespace mpp
