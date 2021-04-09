@@ -2,9 +2,9 @@
 #define MPP_CONTROLS_BEZIER_HPP
 
 #include "steady.hpp"
-#include "generator.hpp"
+#include <musicpp/generator.hpp>
 
-#include "utils/interpolate.hpp"
+#include <musicpp/utils/interpolate.hpp>
 #include <algorithm>
 
 namespace mpp

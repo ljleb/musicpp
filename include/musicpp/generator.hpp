@@ -1,8 +1,8 @@
 #ifndef MPP_GENERATOR_HPP
 #define MPP_GENERATOR_HPP
 
-#include "config.hpp"
-#include "time_point.hpp"
+#include <musicpp/config.hpp>
+#include <musicpp/time_point.hpp>
 
 namespace mpp
 {

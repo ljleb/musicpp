@@ -1,9 +1,9 @@
 #ifndef MPP_LITERALS_HPP
 #define MPP_LITERALS_HPP
 
-#include "controls/steady.hpp"
+#include <musicpp/controls/steady.hpp>
 
-namespace mpp
+namespace mpp::literals
 {
     constexpr double frequency_of_key(double const& note)
     {

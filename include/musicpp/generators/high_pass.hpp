@@ -3,8 +3,8 @@
 
 #include "low_pass.hpp"
 
-#include "generator.hpp"
-#include "mixer.hpp"
+#include <musicpp/generator.hpp>
+#include <musicpp/mixer.hpp>
 
 namespace mpp
 {

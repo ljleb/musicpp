@@ -1,8 +1,8 @@
 #ifndef MPP_MAIN_HPP
 #define MPP_MAIN_HPP
 
-#include "export.hpp"
-#include "config.hpp"
+#include <musicpp/export.hpp>
+#include <musicpp/config.hpp>
 
 namespace mpp
 {

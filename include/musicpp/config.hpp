@@ -1,7 +1,7 @@
 #ifndef MPP_CONFIG_HPP
 #define MPP_CONFIG_HPP
 
-#include "utils/constexpr_stoi.hpp"
+#include <musicpp/utils/constexpr_stoi.hpp>
 #include <vector>
 #include <string>
 #include <cstdint>

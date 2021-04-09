@@ -1,7 +1,7 @@
 #ifndef MPP_MIXERS_SAMPLE_HPP
 #define MPP_MIXERS_SAMPLE_HPP
 
-#include "mixer.hpp"
+#include <musicpp/mixer.hpp>
 
 namespace mpp
 {

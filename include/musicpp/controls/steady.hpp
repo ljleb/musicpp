@@ -1,7 +1,7 @@
 #ifndef MPP_CONTROLS_STEADY_HPP
 #define MPP_CONTROLS_STEADY_HPP
 
-#include "generator.hpp"
+#include <musicpp/generator.hpp>
 
 #include <cmath>
 

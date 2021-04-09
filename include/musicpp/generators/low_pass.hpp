@@ -2,12 +2,13 @@
 #define MPP_GENERATORS_LOW_PASS_HPP
 
 #include "basic.hpp"
-#include "generator.hpp"
-#include "mixer.hpp"
 
-#include "controls/steady.hpp"
+#include <musicpp/generator.hpp>
+#include <musicpp/mixer.hpp>
 
-#include "utils/interpolate.hpp"
+#include <musicpp/controls/steady.hpp>
+
+#include <musicpp/utils/interpolate.hpp>
 #include <array>
 
 namespace mpp

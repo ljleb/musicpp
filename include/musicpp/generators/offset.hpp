@@ -1,7 +1,7 @@
 #ifndef MPP_GENERATORS_OFFSET_HPP
 #define MPP_GENERATORS_OFFSET_HPP
 
-#include "generator.hpp"
+#include <musicpp/generator.hpp>
 
 #include <cstdint>
 

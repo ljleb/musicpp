@@ -1,7 +1,7 @@
 #ifndef MPP_GENERATORS_SIZE_HPP
 #define MPP_GENERATORS_SIZE_HPP
 
-#include "generator.hpp"
+#include <musicpp/generator.hpp>
 
 #include <cstdint>
 

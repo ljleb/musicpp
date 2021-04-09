@@ -1,9 +1,9 @@
 #ifndef MPP_GENERATORS_BASIC_HPP
 #define MPP_GENERATORS_BASIC_HPP
 
-#include "controls/steady.hpp"
+#include <musicpp/generator.hpp>
 
-#include "generator.hpp"
+#include <musicpp/controls/steady.hpp>
 
 #include <cmath>
 
@@ -34,10 +34,15 @@ namespace mpp
     template <typename FrequencyControl>
     struct Generator<Sample, Basic<SINE, FrequencyControl>>
     {
-        Sample generate_at(TimePoint const& time, Config const& config) const&
+        constexpr Sample generate_at(TimePoint const& time, Config const& config) const&
         {
             const double& frequency { interpolate_control(basic._frequency, time / 2) };
             return std::sin(2 * M_PI * frequency * time.index / config.sample_rate);
+        }
+
+        constexpr uint64_t offset() const&
+        {
+            return 0;
         }
 
         Basic<SINE, FrequencyControl>& basic;
@@ -46,10 +51,15 @@ namespace mpp
     template <typename FrequencyControl>
     struct Generator<Sample, Basic<SAW, FrequencyControl>>
     {
-        Sample generate_at(TimePoint const& time, Config const& config) const&
+        constexpr Sample generate_at(TimePoint const& time, Config const& config) const&
         {
             const double& frequency { interpolate_control(basic._frequency, time / 2) };
             return std::fmod(2 * frequency * time.index / config.sample_rate, 2) - 1;
+        }
+
+        constexpr uint64_t offset() const&
+        {
+            return 0;
         }
 
         Basic<SAW, FrequencyControl>& basic;

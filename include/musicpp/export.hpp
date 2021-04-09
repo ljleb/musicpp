@@ -1,8 +1,8 @@
 #ifndef MPP_EXPORT_HPP
 #define MPP_EXPORT_HPP
 
-#include "config.hpp"
-#include "time_point.hpp"
+#include <musicpp/config.hpp>
+#include <musicpp/time_point.hpp>
 
 #include <fstream>
 #include <iostream>

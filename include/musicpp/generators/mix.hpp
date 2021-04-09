@@ -1,10 +1,10 @@
 #ifndef MPP_GENERATORS_MIX_HPP
 #define MPP_GENERATORS_MIX_HPP
 
-#include "generator.hpp"
-#include "mixer.hpp"
+#include <musicpp/generator.hpp>
+#include <musicpp/mixer.hpp>
 
-#include "utils/tuple_foreach.hpp"
+#include <musicpp/utils/tuple_foreach.hpp>
 #include <vector>
 #include <tuple>
 
