@@ -26,7 +26,7 @@ int main(int const argc, char** const argv)
 
     Config const& config { argc, argv };
 
-    auto&& pattern = [&config](auto const& synth)
+    auto const& pattern = [&](auto const& synth)
     {
         auto const& note_size = config.sample_rate / 8;
         auto const& note_offset = config.sample_rate / 4;
@@ -42,7 +42,7 @@ int main(int const argc, char** const argv)
         };
     };
 
-    auto&& synth_a
+    auto const& synth_a
     {
         [](auto const& frequency)
         {
@@ -55,7 +55,7 @@ int main(int const argc, char** const argv)
         }
     };
 
-    auto&& synth_b
+    auto const& synth_b
     {
         [](auto const& frequency)
         {
@@ -74,7 +74,7 @@ int main(int const argc, char** const argv)
         }
     };
 
-    auto&& master_input
+    auto&& input
     {
         Mix
         {
@@ -83,6 +83,6 @@ int main(int const argc, char** const argv)
         }
     };
 
-    generate_and_write_samples(master_input, config);
+    generate_and_write_samples(input, config);
     return 0;
 }
