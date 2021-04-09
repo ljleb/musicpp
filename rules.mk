@@ -17,7 +17,11 @@ WXX_OPTIONS :=
 all: out/main.wav
 
 watch:
-	while inotifywait --quiet --event modify --recursive ./src; do make play; done
+	export LAST_PID="0" && \
+	while inotifywait --quiet --event modify --recursive ./src; do \
+		killall play 2> /dev/null; \
+		make play & \
+	done
 
 play: out/main.wav
 	$(WXX) $(WXX_OPTIONS) $<
