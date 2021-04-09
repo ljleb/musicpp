@@ -15,7 +15,7 @@
 
 #include "generator.hpp"
 #include "mixer.hpp"
-#include "export.hpp"
+#include "main.hpp"
 #include "config.hpp"
 
 #include "literals.hpp"
