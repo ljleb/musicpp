@@ -21,7 +21,7 @@ namespace mpp
 
         file.seekp(0);
         file.write(
-            reinterpret_cast<char const*>(samples.data()),
+            reinterpret_cast<char const *const>(samples.data()),
             sizeof(Sample) * samples.size());
     }
 
