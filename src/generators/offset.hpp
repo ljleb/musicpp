@@ -15,9 +15,14 @@ namespace mpp
             _input { input }
         {}
 
-        constexpr TimePoint time_relative_to(TimePoint const& dry_time) const&
+        constexpr bool can_generate(TimePoint const& time) const&
         {
-            return dry_time - _offset;
+            return _offset <= time.index;
+        }
+
+        constexpr TimePoint time_relative_to(TimePoint const& time) const&
+        {
+            return time - _offset;
         }
 
         uint64_t _offset;
@@ -27,9 +32,14 @@ namespace mpp
     template <typename Output, typename Input>
     struct Generator<Output, Offset<Input>>
     {
-        constexpr Output generate(TimePoint const& time, Config const& config) const&
+        constexpr Output generate_at(TimePoint const& time, Config const& config) const&
         {
-            return generator<Output>(_offset._input).generate(_offset.time_relative_to(time), config);
+            if (!_offset.can_generate(time))
+            {
+                return {};
+            }
+
+            return generator<Output>(_offset._input).generate_at(_offset.time_relative_to(time), config);
         }
 
         constexpr uint64_t size() const&

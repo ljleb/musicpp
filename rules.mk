@@ -22,14 +22,20 @@ play: out/main.wav
 
 build-debug: out/main-debug
 
-out/main-debug: src/main.cpp
+out/main-debug: src/main.cpp | out
 	$(CXX) $(CXX_OPTIONS) $(CXX_DEBUG_OPTIONS) $(CXX_INCLUDES) -o $@ $<
 
-out/main.wav: out/main.raw
+out/main.wav: out/main.raw | out
 	$(RXX) $(RXX_OPTIONS) $< $@
 
-out/main.raw: out/main
+out/main.raw: out/main | out
 	$< $@ $(SAMPLE_RATE)
 
-out/main: src/main.cpp
+out/main: src/main.cpp | out
 	$(CXX) $(CXX_OPTIONS) $(CXX_RELEASE_OPTIONS) $(CXX_INCLUDES) -o $@ $<
+
+out:
+	mkdir -p out
+
+clean:
+	rm -rf out

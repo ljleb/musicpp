@@ -5,17 +5,18 @@
 #include <algorithm>
 #include <cstdint>
 
-template <typename Tuple, typename Function, std::size_t ...Indices>
+template <typename Tuple, typename Function, std::size_t... Indices>
 void for_each_impl(Tuple&& tuple, Function&& function, std::index_sequence<Indices...>) {
     using swallow = int[];
-    (void) swallow {
+    static_cast<void>(swallow
+    {
         1,
         (
             function(std::get<Indices>(std::forward<Tuple>(tuple))),
             void(),
             int {}
         )...
-    };
+    });
 }
 
 template <typename Tuple, typename Function>

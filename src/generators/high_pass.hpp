@@ -20,21 +20,6 @@ namespace mpp
             HighPass<CutoffControl, uint64_t, Input> { cutoff, 1, input }
         {}
 
-        constexpr Sample generate_sample(TimePoint const& time)
-        {
-            Sample const& output { generator<Sample>(_input).generate(time) };
-
-            if (interpolate_control(_nested._order, time) > 0)
-            {
-                const Sample& low_passed_output { _nested.generate_sample(time) };
-                return output - low_passed_output;
-            }
-            else
-            {
-                return output;
-            }
-        }
-
         Input _input;
         LowPass<CutoffControl, OrderControl, Input> _nested;
     };
@@ -46,9 +31,19 @@ namespace mpp
     template <typename CutoffControl, typename OrderControl, typename Input>
     struct Generator<Sample, HighPass<CutoffControl, OrderControl, Input>>
     {
-        Sample generate(TimePoint const& time, Config const& config)
+        constexpr Sample generate_at(TimePoint const& time, Config const& config) const&
         {
-            return high_pass.generate_sample(time);
+            Sample const& output { generator<Sample>(high_pass._input).generate_at(time) };
+
+            if (interpolate_control(high_pass._nested._order, time) > 0)
+            {
+                const Sample& low_passed_output { high_pass._nested.generate_sample(time) };
+                return output - low_passed_output;
+            }
+            else
+            {
+                return output;
+            }
         }
 
         constexpr uint64_t size() const&

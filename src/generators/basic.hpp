@@ -26,15 +26,15 @@ namespace mpp
     };
 
     template <BasicShape shape, typename FrequencyControl>
-    Basic<shape, FrequencyControl> make_basic(FrequencyControl&& frequency)
+    Basic<shape, FrequencyControl> make_basic(FrequencyControl const& frequency)
     {
-        return { std::forward<FrequencyControl>(frequency) };
+        return { frequency };
     }
 
     template <typename FrequencyControl>
     struct Generator<Sample, Basic<SINE, FrequencyControl>>
     {
-        Sample generate(TimePoint const& time, Config const& config)
+        Sample generate_at(TimePoint const& time, Config const& config) const&
         {
             const double& frequency { interpolate_control(basic._frequency, time / 2) };
             return std::sin(2 * M_PI * frequency * time.index / config.sample_rate);
@@ -46,7 +46,7 @@ namespace mpp
     template <typename FrequencyControl>
     struct Generator<Sample, Basic<SAW, FrequencyControl>>
     {
-        Sample generate(TimePoint const& time, Config const& config)
+        Sample generate_at(TimePoint const& time, Config const& config) const&
         {
             const double& frequency { interpolate_control(basic._frequency, time / 2) };
             return std::fmod(2 * frequency * time.index / config.sample_rate, 2) - 1;

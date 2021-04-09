@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "generators/composite.hpp"
+#include "generators/mix.hpp"
 #include "generators/size.hpp"
 #include "generators/offset.hpp"
 #include "generators/low_pass.hpp"
@@ -32,60 +32,57 @@ int main(int const argc, char** const argv)
         auto const& note_offset = config.sample_rate / 4;
         return Mix
         {
-            Offset { note_offset * 7, Size { note_size * 3, synth(4_G), }, },
-            Offset { note_offset * 5, Size { note_size * 3, synth(4_B), }, },
-            Offset { note_offset * 4, Size { note_size * 2, synth(5_C), }, },
-            Offset { note_offset * 3, Size { note_size * 2, synth(5_G), }, },
-            Offset { note_offset * 2, Size { note_size * 2, synth(4_A), }, },
-            Offset { note_offset * 1, Size { note_size * 2, synth(4_A), }, },
             Offset { note_offset * 0, Size { note_size * 2, synth(4_A), }, },
+            Offset { note_offset * 1, Size { note_size * 2, synth(4_A), }, },
+            Offset { note_offset * 2, Size { note_size * 2, synth(4_A), }, },
+            Offset { note_offset * 3, Size { note_size * 2, synth(5_G), }, },
+            Offset { note_offset * 4, Size { note_size * 2, synth(5_C), }, },
+            Offset { note_offset * 5, Size { note_size * 3, synth(4_B), }, },
+            Offset { note_offset * 7, Size { note_size * 3, synth(4_G), }, },
         };
     };
 
-    auto&& synth_a = [](auto const& frequency)
+    auto&& synth_a
     {
-        return LowPass
+        [](auto const& frequency)
         {
-            Bezier { frequency * 4, 0 },
-            mpp::make_basic<SAW>(frequency),
-        };
-        // return mpp::make_basic<SAW>(frequency * 2);
+            return LowPass
+            {
+                Bezier { frequency * 4, 0 },
+                mpp::make_basic<SAW>(frequency),
+            };
+            // return mpp::make_basic<SAW>(frequency * 2);
+        }
     };
 
-    auto&& synth_b = [](auto const& frequency)
+    auto&& synth_b
     {
-        return LowPass
+        [](auto const& frequency)
         {
-            Bezier { 0, frequency * 2 },
-            make_basic<SINE>
-            (
-                Bezier
-                {
-                    frequency / 2,
-                    Bezier { 0, frequency / 2 },
-                }
-            ),
-        };
+            return LowPass
+            {
+                Bezier { 0, frequency * 2 },
+                make_basic<SINE>
+                (
+                    Bezier
+                    {
+                        frequency / 2,
+                        Bezier { 0, frequency / 2 },
+                    }
+                ),
+            };
+        }
     };
 
-    auto&& master_input = Mix
+    auto&& master_input
     {
-        pattern(synth_a),
-        // pattern(synth_b),
+        Mix
+        {
+            pattern(synth_a),
+            // pattern(synth_b),
+        }
     };
 
-    auto&& master_generator { generator<Sample>(master_input) };
-
-    Samples result {};
-    uint64_t const& result_size { master_generator.size() + master_generator.offset() };
-
-    for (uint64_t result_index { 0 }; result_index < result_size; ++result_index)
-    {
-        TimePoint const& time { result_index, result_size };
-        result.push_back(master_generator.generate(time, config));
-    }
-
-    write_samples_to(config.file_name, result);
-
+    generate_and_write_samples(master_input, config);
     return 0;
 }

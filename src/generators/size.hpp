@@ -20,6 +20,11 @@ namespace mpp
             return time.index < _size;
         }
 
+        constexpr TimePoint constrained(TimePoint const& time) const&
+        {
+            return { time.index, _size };
+        }
+
         uint64_t _size;
         Input _input;
     };
@@ -27,14 +32,14 @@ namespace mpp
     template <typename Output, typename Input>
     struct Generator<Output, Size<Input>>
     {
-        constexpr Output generate(TimePoint const& time, Config const& config) const&
+        constexpr Output generate_at(TimePoint const& time, Config const& config) const&
         {
             if (!_size.can_generate(time))
             {
                 return {};
             }
 
-            return generator<Output>(_size._input).generate(time, config);
+            return generator<Output>(_size._input).generate_at(_size.constrained(time), config);
         }
 
         constexpr uint64_t size() const&

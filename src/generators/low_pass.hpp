@@ -29,25 +29,6 @@ namespace mpp
             LowPass<CutoffControl, uint64_t, Input> { cutoff, 1, input }
         {}
 
-        constexpr Sample generate_sample(TimePoint const& time, Config const& config)
-        {
-            auto&& nested_generator { generator<Sample>(_input) };
-            Sample output { nested_generator.generate(time, config) };
-
-            double const& actual_cutoff { interpolate_control(_cutoff, time) * interpolate_control(_order, time) };
-            double const& ratio { actual_cutoff / config.sample_rate };
-
-            _last_wet_samples.resize(interpolate_control(_order, time));
-            for (uint64_t i { 0 }; i < _last_wet_samples.size(); ++i)
-            {
-                Sample const& interpolated = interpolate(_last_wet_samples[i], output, ratio);
-                _last_wet_samples[i] = interpolated;
-                output = interpolated;
-            }
-
-            return output;
-        }
-
         friend class HighPass<CutoffControl, OrderControl, Input>;
 
         CutoffControl _cutoff;
@@ -63,9 +44,23 @@ namespace mpp
     template <typename CutoffControl, typename OrderControl, typename Input>
     struct Generator<Sample, LowPass<CutoffControl, OrderControl, Input>>
     {
-        constexpr Sample generate(TimePoint const& time, Config const& config)
+        constexpr Sample generate_at(TimePoint const& time, Config const& config) const&
         {
-            return low_pass.generate_sample(time, config);
+            auto&& nested_generator { generator<Sample>(low_pass._input) };
+            Sample output { nested_generator.generate_at(time, config) };
+
+            double const& actual_cutoff { interpolate_control(low_pass._cutoff, time) * interpolate_control(low_pass._order, time) };
+            double const& ratio { actual_cutoff / config.sample_rate };
+
+            low_pass._last_wet_samples.resize(interpolate_control(low_pass._order, time));
+            for (uint64_t i { 0 }; i < low_pass._last_wet_samples.size(); ++i)
+            {
+                Sample const& interpolated = interpolate(low_pass._last_wet_samples[i], output, ratio);
+                low_pass._last_wet_samples[i] = interpolated;
+                output = interpolated;
+            }
+
+            return output;
         }
 
         constexpr uint64_t size() const&

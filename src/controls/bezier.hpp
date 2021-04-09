@@ -35,13 +35,13 @@ namespace mpp
             };
         }
 
-    friend constexpr auto interpolate_control(Bezier<MinControl, MaxControl> const& self, TimePoint const& time)
-    {
-        return interpolate(
-            static_cast<double>(interpolate_control(self._min, time)),
-            static_cast<double>(interpolate_control(self._max, time)),
-            time.completion());
-    }
+        friend constexpr double interpolate_control(Bezier<MinControl, MaxControl> const& self, TimePoint const& time)
+        {
+            return interpolate(
+                static_cast<double>(interpolate_control(self._min, time)),
+                static_cast<double>(interpolate_control(self._max, time)),
+                time.completion());
+        }
 
     private:
         MinControl _min;
