@@ -1,5 +1,5 @@
-#ifndef MPP_GENERATORS_COMPOSITE_HPP
-#define MPP_GENERATORS_COMPOSITE_HPP
+#ifndef MPP_GENERATORS_MIX_HPP
+#define MPP_GENERATORS_MIX_HPP
 
 #include "generator.hpp"
 #include "mixer.hpp"
@@ -43,7 +43,7 @@ namespace mpp
 
         constexpr uint64_t size() const&
         {
-            if constexpr (sizeof...(Inputs) <= 1)
+            if constexpr (sizeof...(Inputs) == 1)
             {
                 return generator<Output>(std::get<0>(inputs)).size();
             }
@@ -64,7 +64,7 @@ namespace mpp
 
         constexpr uint64_t offset() const&
         {
-            if constexpr (sizeof...(Inputs) <= 1)
+            if constexpr (sizeof...(Inputs) == 1)
             {
                 return generator<Output>(std::get<0>(inputs)).offset();
             }
