@@ -7,6 +7,7 @@
 #include <musicpp/generators/offset.hpp>
 #include <musicpp/generators/low_pass.hpp>
 #include <musicpp/generators/high_pass.hpp>
+#include <musicpp/generators/volume.hpp>
 #include <musicpp/generators/basic.hpp>
 
 #include <musicpp/mixers/sample.hpp>
