@@ -1,6 +1,6 @@
 # musicpp
 
-Clean music production framework for C++. *Stonk* up your creativity!
+Clean sound design and music production framework for C++. *Stonk* up your creativity!
 
 MPP tries to ease the process of creating new sounds by providing an extensible framework.
 
