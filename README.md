@@ -7,7 +7,7 @@ MPP tries to ease the process of creating new sounds by providing an extensible 
 ## Build
 
 ```cpp
-make
+make -f rules.mk
 ```
 
 Creates the `out/main.wav` files out of the `src/main.cpp` source file.
