@@ -16,6 +16,18 @@ Creates the `out/main.wav` files out of the `src/main.cpp` source file.
 
 *Also note: only `g++-10` has been tested and is currently expected to work. Feel free to open a merge request for any issues encountered using other compilers.*
 
+### Examples
+
+You'll find many example usages of the library in the `examples` directory.
+
+To build e.g. `examples/circle`, just run:
+
+```cpp
+make -C examples/circle
+```
+
+This will build the `main.wav` file under `examples/circle/out`.
+
 ### Watch `src` recursively for changes (linux)
 
 *Note: you need the `play` executable in your path for this to work*
