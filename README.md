@@ -30,7 +30,7 @@ This will build the `main.wav` file under `examples/circle/out`.
 
 ### Watch `src` recursively for changes (linux)
 
-*Note: you need the `play` executable in your path for this to work*
+*Note: you need the `play` executable in your path for this to work at the moment*
 
 ```cpp
 make watch
@@ -40,7 +40,7 @@ Rebuilds and plays `main.wav` whenever updating anything under `src`.
 
 ### Build and play (linux)
 
-*Note: you need the `play` executable in your path for this to work*
+*Note: you need the `play` executable in your path for this to work at the moment*
 
 ```cpp
 make play
