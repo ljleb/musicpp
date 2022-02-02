@@ -14,7 +14,7 @@ Creates the `out/main.wav` files out of the `src/main.cpp` source file.
 
 *Note: the library depends on some features of C++ 20.*
 
-*Also note: only `g++-10` has been tested and is currently expected to work. Feel free to open a merge request for any issues encountered using other compilers.*
+*Also note: only `g++-10` has been tested and is currently expected to work. Feel free to open an issue and/or a merge request for any issues encountered using other compilers.*
 
 ### Examples
 
