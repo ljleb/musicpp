@@ -1,8 +1,9 @@
-.PHONY: all watch build-debug
+.PHONY: all watch play build-debug out clean
 
-MPP_DIR := ./musicpp
+MPP_DIR ?= ./musicpp
+SAMPLE_RATE ?= 44100
 
-CXX := /usr/bin/g++
+CXX ?= /usr/bin/g++
 CXX_INCLUDES := -I./src -I$(MPP_DIR)/include
 CXX_OPTIONS := -std=c++2a
 CXX_RELEASE_OPTIONS := -O3

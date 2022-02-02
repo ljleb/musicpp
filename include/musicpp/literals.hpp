@@ -12,72 +12,72 @@ namespace mpp::literals
 
     constexpr double operator"" _C(long double const key)
     {
-        return frequency_of_key(key * 12 - 9);
+        return frequency_of_key(key * 12 - 8);
     }
 
     constexpr double operator"" _C(unsigned long long const key)
     {
-        return frequency_of_key(static_cast<double const>(key) * 12 - 9);
+        return frequency_of_key(static_cast<double const>(key) * 12 - 8);
     }
 
     constexpr double operator"" _D(long double const key)
     {
-        return frequency_of_key(key * 12 - 7);
+        return frequency_of_key(key * 12 - 6);
     }
 
     constexpr double operator"" _D(unsigned long long const key)
     {
-        return frequency_of_key(static_cast<double const>(key) * 12 - 7);
+        return frequency_of_key(static_cast<double const>(key) * 12 - 6);
     }
 
     constexpr double operator"" _E(long double const key)
     {
-        return frequency_of_key(key * 12 - 5);
+        return frequency_of_key(key * 12 - 4);
     }
 
     constexpr double operator"" _E(unsigned long long const key)
     {
-        return frequency_of_key(static_cast<double const>(key) * 12 - 5);
+        return frequency_of_key(static_cast<double const>(key) * 12 - 4);
     }
 
     constexpr double operator"" _F(long double const key)
     {
-        return frequency_of_key(key * 12 - 4);
+        return frequency_of_key(key * 12 - 3);
     }
 
     constexpr double operator"" _F(unsigned long long const key)
     {
-        return frequency_of_key(static_cast<double const>(key) * 12 - 4);
+        return frequency_of_key(static_cast<double const>(key) * 12 - 3);
     }
 
     constexpr double operator"" _G(long double const key)
     {
-        return frequency_of_key(key * 12 - 2);
+        return frequency_of_key(key * 12 - 1);
     }
 
     constexpr double operator"" _G(unsigned long long const key)
     {
-        return frequency_of_key(static_cast<double const>(key) * 12 - 2);
+        return frequency_of_key(static_cast<double const>(key) * 12 - 1);
     }
 
     constexpr double operator"" _A(long double const key)
     {
-        return frequency_of_key(key * 12);
+        return frequency_of_key(key * 12 + 1);
     }
 
     constexpr double operator"" _A(unsigned long long const key)
     {
-        return frequency_of_key(static_cast<double const>(key) * 12);
+        return frequency_of_key(static_cast<double const>(key) * 12 + 1);
     }
 
     constexpr double operator"" _B(long double const key)
     {
-        return frequency_of_key(key * 12 + 2);
+        return frequency_of_key(key * 12 + 3);
     }
 
     constexpr double operator"" _B(unsigned long long const key)
     {
-        return frequency_of_key(static_cast<double const>(key) * 12 + 2);
+        return frequency_of_key(static_cast<double const>(key) * 12 + 3);
     }
 }
 

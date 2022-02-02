@@ -2,20 +2,14 @@
 #define MPP_GENERATORS_BASIC_HPP
 
 #include <musicpp/generator.hpp>
-
+#include <musicpp/utils/string_literal.hpp>
 #include <musicpp/controls/steady.hpp>
 
 #include <cmath>
 
 namespace mpp
 {
-    enum BasicShape
-    {
-        SINE = 0,
-        SAW,
-    };
-
-    template <BasicShape shape, typename FrequencyControl>
+    template <StringLiteral shape, typename FrequencyControl>
     struct Basic
     {
         constexpr Basic(FrequencyControl const& frequency):
@@ -25,14 +19,14 @@ namespace mpp
         FrequencyControl _frequency;
     };
 
-    template <BasicShape shape, typename FrequencyControl>
+    template <StringLiteral shape, typename FrequencyControl>
     Basic<shape, FrequencyControl> make_basic(FrequencyControl const& frequency)
     {
         return { frequency };
     }
 
     template <typename FrequencyControl>
-    struct Generator<Sample, Basic<SINE, FrequencyControl>>
+    struct Generator<Sample, Basic<"sine", FrequencyControl>>
     {
         constexpr Sample generate_at(TimePoint const& time, Config const& config) const&
         {
@@ -45,11 +39,11 @@ namespace mpp
             return 0;
         }
 
-        Basic<SINE, FrequencyControl>& basic;
+        Basic<"sine", FrequencyControl>& basic;
     };
 
     template <typename FrequencyControl>
-    struct Generator<Sample, Basic<SAW, FrequencyControl>>
+    struct Generator<Sample, Basic<"saw", FrequencyControl>>
     {
         constexpr Sample generate_at(TimePoint const& time, Config const& config) const&
         {
@@ -62,7 +56,7 @@ namespace mpp
             return 0;
         }
 
-        Basic<SAW, FrequencyControl>& basic;
+        Basic<"saw", FrequencyControl>& basic;
     };
 }
 
