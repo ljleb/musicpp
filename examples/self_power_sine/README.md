@@ -1,4 +1,4 @@
-# Basic Saw
+# Self Power Sine
 
 Sine wave with `x^x` as the funciton of its frequency.
 
